@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Mu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Shared.Kafka.Topics", "Calculator.Microservices.Shared.Kafka.Topics\Calculator.Microservices.Shared.Kafka.Topics.csproj", "{BB5A0336-DCD8-4DCE-8BE1-802318E63902}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator.Microservices.Shared.Kafka.Commands", "Calculator.Microservices.Shared.Kafka.Commands\Calculator.Microservices.Shared.Kafka.Commands.csproj", "{FDE7479B-EAFF-4F4F-BBC1-EC5173F88AB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Shared.Kafka.Commands", "Calculator.Microservices.Shared.Kafka.Commands\Calculator.Microservices.Shared.Kafka.Commands.csproj", "{FDE7479B-EAFF-4F4F-BBC1-EC5173F88AB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
