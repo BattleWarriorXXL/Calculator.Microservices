@@ -47,7 +47,7 @@
                 return null;
             }
 
-            double? b = double.TryParse(parameters[1], out var second) ? second : null;
+            double? b = double.TryParse(parameters[2], out var second) ? second : null;
             if (b == null)
             {
                 return null;

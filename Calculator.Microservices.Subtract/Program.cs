@@ -1,7 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-using var messageBus = new MessageBus(Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS") ?? "localhost:9092");
+using var messageBus = new MessageBus();
 Task.Run(() => messageBus.SubscribeOnTopic<string>(Topics.ACTION_TOPIC, action =>
 {
     var expressions = Commands.ParseCommand(action);

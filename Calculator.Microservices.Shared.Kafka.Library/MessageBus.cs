@@ -12,11 +12,10 @@ namespace Calculator.Microservices.Shared.Kafka.Library
 
         private bool _disposed;
 
-        public MessageBus() : this("localhost:9092") { }
+        public MessageBus() : this(Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS") ?? "localhost:9093") { }
 
         public MessageBus(string host)
         {
-            Console.WriteLine(host);
             _producerConfig = new ProducerConfig
             {
                 BootstrapServers = host
@@ -38,7 +37,6 @@ namespace Calculator.Microservices.Shared.Kafka.Library
 
         public void SubscribeOnTopic<T>(string topic, Action<T> action, CancellationToken cancellationToken) where T : class
         {
-            Console.WriteLine($"subscribe on {topic}");
             var messageBus = new MessageBus();
             using (messageBus._consumer = new ConsumerBuilder<Ignore, string>(_cosumerConfig).Build())
             {

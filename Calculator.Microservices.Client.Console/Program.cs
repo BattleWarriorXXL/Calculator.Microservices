@@ -1,4 +1,6 @@
-﻿Console.WriteLine("Starting console client of calculator...");
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+
+Console.WriteLine("Starting console client of calculator...");
 var consoleThread = Thread.CurrentThread;
 
 using var messageHub = new MessageBus();
