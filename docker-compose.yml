@@ -1,0 +1,106 @@
+version: "3.8"
+
+networks: 
+  kafka_network:
+    name: kafka_network
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.2.0
+    container_name: zookeeper
+    networks: 
+      - kafka_network
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:6.2.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9092"
+    networks: 
+      - kafka_network
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_LOCALHOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_LOCALHOST://localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  client.web:
+    image: battlewarriorxxl/calculator:client_web
+    build:
+      dockerfile: Calculator.Microservices.Client.Web/Dockerfile
+    ports:
+      - "3000:80"
+    networks:
+      - kafka_network
+    depends_on:
+      - kafka
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+
+  client.console:
+    image: battlewarriorxxl/calculator:client_console
+    build:
+      dockerfile: Calculator.Microservices.Client.Console/Dockerfile
+    networks:
+      - kafka_network
+    depends_on:
+      - kafka
+    stdin_open: true
+    tty: true
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+
+  add:
+    image: battlewarriorxxl/calculator:add
+    build:
+      dockerfile: Calculator.Microservices.Add/Dockerfile
+    networks:
+      - kafka_network
+    depends_on:
+      - kafka
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+
+  subtract:
+    image: battlewarriorxxl/calculator:subtract
+    build:
+      dockerfile: Calculator.Microservices.Subtract/Dockerfile
+    networks:
+      - kafka_network
+    depends_on:
+      - kafka
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+
+  multiply:
+    image: battlewarriorxxl/calculator:multiply
+    build:
+      dockerfile: Calculator.Microservices.Multiply/Dockerfile
+    networks:
+      - kafka_network
+    depends_on:
+      - kafka
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+
+  divide:
+    image: battlewarriorxxl/calculator:divide
+    build:
+      dockerfile: Calculator.Microservices.Divide/Dockerfile
+    networks:
+      - kafka_network
+    depends_on:
+      - kafka
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      
