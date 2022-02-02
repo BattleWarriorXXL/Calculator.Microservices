@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Di
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Multiply", "Calculator.Microservices.Multiply\Calculator.Microservices.Multiply.csproj", "{0FBA1D89-AD0D-4861-929A-5E5B9EF6AF71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator.Microservices.Shared.Kafka.Topics", "Calculator.Microservices.Shared.Kafka.Topics\Calculator.Microservices.Shared.Kafka.Topics.csproj", "{BB5A0336-DCD8-4DCE-8BE1-802318E63902}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Shared.Kafka.Topics", "Calculator.Microservices.Shared.Kafka.Topics\Calculator.Microservices.Shared.Kafka.Topics.csproj", "{BB5A0336-DCD8-4DCE-8BE1-802318E63902}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator.Microservices.Shared.Kafka.Commands", "Calculator.Microservices.Shared.Kafka.Commands\Calculator.Microservices.Shared.Kafka.Commands.csproj", "{FDE7479B-EAFF-4F4F-BBC1-EC5173F88AB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{BB5A0336-DCD8-4DCE-8BE1-802318E63902}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB5A0336-DCD8-4DCE-8BE1-802318E63902}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB5A0336-DCD8-4DCE-8BE1-802318E63902}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDE7479B-EAFF-4F4F-BBC1-EC5173F88AB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDE7479B-EAFF-4F4F-BBC1-EC5173F88AB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDE7479B-EAFF-4F4F-BBC1-EC5173F88AB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDE7479B-EAFF-4F4F-BBC1-EC5173F88AB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
