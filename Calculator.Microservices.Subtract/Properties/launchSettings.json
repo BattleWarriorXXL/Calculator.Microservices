@@ -1,11 +1,11 @@
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "Calculator.Microservices.Multiply": {
+    "Calculator.Microservices.Subtract": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:5039",
+      "applicationUrl": "http://localhost:5085",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
