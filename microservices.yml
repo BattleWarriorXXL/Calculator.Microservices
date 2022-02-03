@@ -1,0 +1,331 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: zookeeper-service
+  name: zookeeper-service
+spec:
+  type: NodePort
+  ports:
+  - name: zookeeper-port
+    port: 2181
+    nodePort: 30181
+    targetPort: 2181
+  selector:
+    app: zookeeper
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: zookeeper
+  name: zookeeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+      - name: zookeeper
+        image: confluentinc/cp-zookeeper:6.2.0
+        ports:
+        - containerPort: 2181
+        env:
+        - name: ZOOKEEPER_SERVER_1
+          value: zoo1
+        - name: ZOOKEEPER_CLIENT_PORT
+          value: "2181"
+        - name: ZOOKEEPER_TICK_TIME
+          value: "2000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kafka-service
+  name: kafka-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: kafka-port
+    port: 9092
+    nodePort: 30092
+    targetPort: 9092
+  selector:
+    app: kafka
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kafka
+  name: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kafka
+        image: confluentinc/cp-kafka:6.2.0
+        ports:
+        - containerPort: 9092
+        env:
+              - name: KAFKA_BROKER_ID
+                value: "1"
+              - name: KAFKA_ZOOKEEPER_CONNECT
+                value: zookeeper-service:2181
+              - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+                value: PLAINTEXT:PLAINTEXT
+              - name: KAFKA_LISTENERS
+                value: PLAINTEXT://:9092
+              - name: MY_POD_IP
+                valueFrom:
+                  fieldRef:
+                    fieldPath: status.podIP
+              - name: KAFKA_ADVERTISED_LISTENERS
+                value: PLAINTEXT://$(MY_POD_IP):9092
+              - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+                value: "1"
+              - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
+                value: "1"
+              - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+                value: "1"
+              - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+                value: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: client-web-service
+  name: client-web-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: client-web-port
+    port: 80
+    targetPort: 80
+  selector:
+    app: client-web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-web
+  labels:
+    app: client-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: client-web
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: client-web
+    spec:
+      containers:
+      - name: client-web
+        image: battlewarriorxxl/calculator:client_web
+        ports:
+          - containerPort: 80
+        env:
+        - name: BOOTSTRAP_SERVERS
+          value: kafka-service:9092
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: add-service
+  name: add-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: add-port
+    port: 80
+    targetPort: 80
+  selector:
+    app: add
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: add
+  labels:
+    app: add
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: add
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: add
+    spec:
+      containers:
+      - name: add
+        image: battlewarriorxxl/calculator:add
+        ports:
+          - containerPort: 80
+        env:
+        - name: BOOTSTRAP_SERVERS
+          value: kafka-service:9092
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: subtract-service
+  name: subtract-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: subtract-port
+    port: 80
+    targetPort: 80
+  selector:
+    app: subtract
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subtract
+  labels:
+    app: subtract
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: subtract
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: subtract
+    spec:
+      containers:
+      - name: subtract
+        image: battlewarriorxxl/calculator:subtract
+        ports:
+          - containerPort: 80
+        env:
+        - name: BOOTSTRAP_SERVERS
+          value: kafka-service:9092
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: multiply-service
+  name: multiply-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: multiply-port
+    port: 80
+    targetPort: 80
+  selector:
+    app: multiply
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multiply
+  labels:
+    app: multiply
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: multiply
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: multiply
+    spec:
+      containers:
+      - name: multiply
+        image: battlewarriorxxl/calculator:multiply
+        ports:
+          - containerPort: 80
+        env:
+        - name: BOOTSTRAP_SERVERS
+          value: kafka-service:9092
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: divide-service
+  name: divide-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: divide-port
+    port: 80
+    targetPort: 80
+  selector:
+    app: divide
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: divide
+  labels:
+    app: divide
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: divide
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: divide
+    spec:
+      containers:
+      - name: divide
+        image: battlewarriorxxl/calculator:divide
+        ports:
+          - containerPort: 80
+        env:
+        - name: BOOTSTRAP_SERVERS
+          value: kafka-service:9092
+---
