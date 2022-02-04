@@ -4,7 +4,7 @@ var mutex = new Mutex();
 
 using var messageHub = new MessageBus();
 
-Task.Run(() => messageHub.SubscribeOnTopic<string>(Topics.RESULT_TOPIC, message => ShowResult(message), CancellationToken.None));
+Task.Run(() => messageHub.SubscribeOnTopic(Topics.RESULT_TOPIC, message => ShowResult(message), CancellationToken.None));
 
 ShowTip();
 
@@ -40,9 +40,9 @@ static void ShowTip()
     Console.WriteLine("For exit use 'q'");
 }
 
-void ShowResult(string result)
+void ShowResult(Message result)
 {
-    Console.WriteLine($"= {result}");
+    Console.WriteLine($"= {result.Value}");
 }
 
 void ProcessCommand(string? consoleCommand)
@@ -64,7 +64,7 @@ void ProcessCommand(string? consoleCommand)
         return;
     }
 
-    messageHub.SendMessage(Topics.ACTION_TOPIC, command);
+    messageHub.SendMessage(Topics.ACTION_TOPIC, new Message(command));
 }
 
 static string? ProcessParameters(string[] parameters)

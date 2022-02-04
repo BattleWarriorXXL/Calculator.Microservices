@@ -10,14 +10,14 @@
             _messageBus = new MessageBus();
         }
 
-        public void Send(string topic, string message)
+        public void Send(string topic, Message message)
         {
             _messageBus.SendMessage(topic, message);
         }
 
-        public void SubscribeOn<T>(string topic, Action<T> action) where T : class
+        public void SubscribeOn(string topic, Action<Message> action)
         {
-            Task.Run(() => _messageBus.SubscribeOnTopic<T>(topic, action, CancellationToken.None));
+            Task.Run(() => _messageBus.SubscribeOnTopic(topic, action, CancellationToken.None));
         }
 
         public void Dispose()

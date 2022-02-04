@@ -4,11 +4,13 @@ namespace Calculator.Microservices.Shared.Kafka.Library
 {
     public class MessageBus : IDisposable
     {
-        private readonly IProducer<Null, string> _producer;
-        private IConsumer<Ignore, string>? _consumer;
+        private readonly IProducer<Null, Message> _producer;
+        private IConsumer<Ignore, Message>? _consumer;
 
         private readonly ProducerConfig _producerConfig;
         private readonly ConsumerConfig _cosumerConfig;
+
+        private readonly string _sessionKey;
 
         private bool _disposed;
 
@@ -27,27 +29,39 @@ namespace Calculator.Microservices.Shared.Kafka.Library
                 GroupId = "custom-group"
             };
 
-            _producer = new ProducerBuilder<Null, string>(_producerConfig).Build();
+            _producer = new ProducerBuilder<Null, Message>(_producerConfig).SetValueSerializer(new Message()).Build();
+
+            _sessionKey = Guid.NewGuid().ToString();
         }
 
-        public void SendMessage(string topic, string message)
+        public void SendMessage(string topic, Message message)
         {
-            _producer.ProduceAsync(topic, new Message<Null, string> { Value = message });
-        }
-
-        public void SubscribeOnTopic<T>(string topic, Action<T> action, CancellationToken cancellationToken) where T : class
-        {
-            var messageBus = new MessageBus();
-            using (messageBus._consumer = new ConsumerBuilder<Ignore, string>(_cosumerConfig).Build())
+            if (string.IsNullOrEmpty(message.Key))
             {
-                messageBus._consumer.Assign(new List<TopicPartitionOffset> { new TopicPartitionOffset(topic, 0, -1) });
+                message.Key = _sessionKey;
+            }
+            _producer.ProduceAsync(topic, new Message<Null, Message> { Value = message });
+        }
+
+        public void SubscribeOnTopic(string topic, Action<Message> action, CancellationToken cancellationToken)
+        {
+            using (_consumer = new ConsumerBuilder<Ignore, Message>(_cosumerConfig).SetValueDeserializer(new Message()).Build())
+            {
+                _consumer.Assign(new List<TopicPartitionOffset> { new TopicPartitionOffset(topic, 0, -1) });
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    var result = messageBus._consumer.Consume(TimeSpan.FromMilliseconds(10));
-                    if (result != null && result.Message.Value is T value)
+                    var result = _consumer.Consume(cancellationToken);
+                    if (result != null && result.Message.Value is Message value)
                     {
-                        action(value);
+                        if (topic == Topics.Topics.RESULT_TOPIC && result.Message.Value.Key == _sessionKey)
+                        {
+                            action(value);
+                        }
+                        else if (topic == Topics.Topics.ACTION_TOPIC)
+                        {
+                            action(value);
+                        }
                     }
                 }
             }

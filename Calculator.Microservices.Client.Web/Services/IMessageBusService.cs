@@ -2,7 +2,7 @@
 {
     public interface IMessageBusService : IDisposable
     {
-        void Send(string topic, string message);
-        void SubscribeOn<T>(string topic, Action<T> action) where T : class;
+        void Send(string topic, Message message);
+        void SubscribeOn(string topic, Action<Message> action);
     }
 }
