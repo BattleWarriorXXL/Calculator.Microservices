@@ -8,6 +8,8 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:6.2.0
     container_name: zookeeper
+    ports:
+      - "2181:2181"
     networks: 
       - kafka_network
     environment:
@@ -19,6 +21,7 @@ services:
     container_name: kafka
     ports:
       - "9092:9092"
+      - "19092:19092"
     networks: 
       - kafka_network
     depends_on:
@@ -26,8 +29,8 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONNECTIONS_FROM_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,CONNECTIONS_FROM_HOST://localhost:19092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
@@ -48,51 +51,3 @@ services:
     environment:
       KAFKA_BROKER_ID: ignored
       KAFKA_ZOOKEEPER_CONNECT: ignored
-
-  client.web:
-    image: battlewarriorxxl/calculator:client_web
-    ports:
-      - "3000:80"
-    networks:
-      - kafka_network
-    depends_on:
-      - kafka.setup
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-
-  add:
-    image: battlewarriorxxl/calculator:add
-    networks:
-      - kafka_network
-    depends_on:
-      - kafka.setup
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-
-  subtract:
-    image: battlewarriorxxl/calculator:subtract
-    networks:
-      - kafka_network
-    depends_on:
-      - kafka.setup
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-
-  multiply:
-    image: battlewarriorxxl/calculator:multiply
-    networks:
-      - kafka_network
-    depends_on:
-      - kafka.setup
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-
-  divide:
-    image: battlewarriorxxl/calculator:divide
-    networks:
-      - kafka_network
-    depends_on:
-      - kafka.setup
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-      

@@ -1,17 +1,21 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
+﻿Console.WriteLine("Starting console client of calculator...");
 
-Console.WriteLine("Starting console client of calculator...");
-var consoleThread = Thread.CurrentThread;
+var mutex = new Mutex();
 
 using var messageHub = new MessageBus();
 
 Task.Run(() => messageHub.SubscribeOnTopic<string>(Topics.RESULT_TOPIC, message => ShowResult(message), CancellationToken.None));
 
-var input = string.Empty;
+ShowTip();
 
-do
+while (true)
 {
-    ShowTip();
+    Do();
+}
+
+void Do()
+{
+    var input = string.Empty;
 
     switch (input = Console.ReadLine())
     {
@@ -19,11 +23,9 @@ do
             return;
         default:
             ProcessCommand(input);
-            consoleThread.Suspend();
             break;
     }
-    
-} while (true);
+}
 
 static void ShowTip()
 {
@@ -40,8 +42,7 @@ static void ShowTip()
 
 void ShowResult(string result)
 {
-    consoleThread.Resume();
-    Console.WriteLine($"Result {result}");
+    Console.WriteLine($"= {result}");
 }
 
 void ProcessCommand(string? consoleCommand)
