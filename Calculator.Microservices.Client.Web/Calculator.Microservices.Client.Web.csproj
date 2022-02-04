@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Calculator.Microservices.Shared.Kafka.Commands\Calculator.Microservices.Shared.Kafka.Commands.csproj" />
+    <ProjectReference Include="..\Calculator.Microservices.Shared.Kafka.Library\Calculator.Microservices.Shared.Kafka.Library.csproj" />
+    <ProjectReference Include="..\Calculator.Microservices.Shared.Kafka.Topics\Calculator.Microservices.Shared.Kafka.Topics.csproj" />
+  </ItemGroup>
+
+</Project>
