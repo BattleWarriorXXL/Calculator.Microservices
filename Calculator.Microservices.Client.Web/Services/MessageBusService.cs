@@ -7,7 +7,7 @@
 
         public MessageBusService()
         {
-            _messageBus = new MessageBus(Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS") ?? "localhost:9093");
+            _messageBus = new MessageBus();
         }
 
         public void Send(string topic, string message)

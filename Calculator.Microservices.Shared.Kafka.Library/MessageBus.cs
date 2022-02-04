@@ -12,7 +12,7 @@ namespace Calculator.Microservices.Shared.Kafka.Library
 
         private bool _disposed;
 
-        public MessageBus() : this(Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS") ?? "localhost:9093") { }
+        public MessageBus() : this(Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS") ?? "localhost:19092") { }
 
         public MessageBus(string host)
         {
