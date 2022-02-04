@@ -11,7 +11,7 @@ Task.Run(() => messageBus.SubscribeOnTopic(Topics.ACTION_TOPIC, message =>
     }
 
     var command = expressions.Value.Item1;
-    if (command != Commands.MULTIPLY_COMMAND)
+    if (command != Commands.SUBTRACT_COMMAND)
     {
         return;
     }
@@ -19,7 +19,7 @@ Task.Run(() => messageBus.SubscribeOnTopic(Topics.ACTION_TOPIC, message =>
     var a = expressions.Value.Item2;
     var b = expressions.Value.Item3;
 
-    messageBus.SendMessage(Topics.RESULT_TOPIC, new Message(message.Key, (a * b).ToString()));
+    messageBus.SendMessage(Topics.RESULT_TOPIC, new Message(message.Key, (a - b).ToString()));
 }, CancellationToken.None));
 
 app.Run();

@@ -10,4 +10,8 @@
     <PackageReference Include="Confluent.Kafka" Version="1.8.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Calculator.Microservices.Shared.Kafka.Topics\Calculator.Microservices.Shared.Kafka.Topics.csproj" />
+  </ItemGroup>
+
 </Project>
