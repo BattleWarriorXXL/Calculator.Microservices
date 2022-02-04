@@ -5,18 +5,17 @@ namespace Calculator.Microservices.Shared.Kafka.Library
     public class MessageBus : IDisposable
     {
         private readonly IProducer<Null, string> _producer;
-        private IConsumer<Ignore, string>? _consumer;
+        private IConsumer<Null, string>? _consumer;
 
         private readonly ProducerConfig _producerConfig;
         private readonly ConsumerConfig _cosumerConfig;
 
         private bool _disposed;
 
-        public MessageBus() : this("localhost:9092") { }
+        public MessageBus() : this(Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS") ?? "localhost:19092") { }
 
         public MessageBus(string host)
         {
-            Console.WriteLine(host);
             _producerConfig = new ProducerConfig
             {
                 BootstrapServers = host
@@ -33,20 +32,18 @@ namespace Calculator.Microservices.Shared.Kafka.Library
 
         public void SendMessage(string topic, string message)
         {
-            _producer.ProduceAsync(topic, new Message<Null, string> { Value = message });
+            _producer.ProduceAsync(topic, new Message<Null, string> { Value = $"{message} " });
         }
 
         public void SubscribeOnTopic<T>(string topic, Action<T> action, CancellationToken cancellationToken) where T : class
         {
-            Console.WriteLine($"subscribe on {topic}");
-            var messageBus = new MessageBus();
-            using (messageBus._consumer = new ConsumerBuilder<Ignore, string>(_cosumerConfig).Build())
+            using (_consumer = new ConsumerBuilder<Null, string>(_cosumerConfig).Build())
             {
-                messageBus._consumer.Assign(new List<TopicPartitionOffset> { new TopicPartitionOffset(topic, 0, -1) });
+                _consumer.Assign(new List<TopicPartitionOffset> { new TopicPartitionOffset(topic, 0, -1) });
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    var result = messageBus._consumer.Consume(TimeSpan.FromMilliseconds(10));
+                    var result = _consumer.Consume(cancellationToken);
                     if (result != null && result.Message.Value is T value)
                     {
                         action(value);
