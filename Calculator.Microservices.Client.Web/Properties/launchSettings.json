@@ -1,12 +1,4 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:48289",
-      "sslPort": 0
-    }
-  },
   "profiles": {
     "Calculator.Microservices.Client.Web": {
       "commandName": "Project",
@@ -14,14 +6,16 @@
       "launchBrowser": true,
       "applicationUrl": "http://localhost:5219",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "EVENT_BUS_RETRY_COUNT": "5",
+        "BROKER_NAME": "KAFKA",
+
+        "KAFKA_BOOTSTRAP_SERVERS": "localhost:19092",
+        "KAFKA_GROUP_ID": "custom-group",
+        "KAFKA_TOPIC": "result",
+
+        "RABBITMQ_HOSTNAME": "localhost",
+        "RABBITMQ_QUEUE": "result"
       }
     }
   }

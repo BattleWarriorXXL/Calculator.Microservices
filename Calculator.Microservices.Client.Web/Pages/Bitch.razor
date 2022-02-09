@@ -61,13 +61,13 @@
                 EventBus.Publish(new AddIntegrationEvent(A.Value, B.Value));
                 break;
             case "-":
-               // MessageBusService.Send(Topics.ACTION_TOPIC, new Message(Commands.Subtract(A.Value, B.Value)));
+                 EventBus.Publish(new SubtractIntegrationEvent(A.Value, B.Value));
                 break;
             case "*":
-              //  MessageBusService.Send(Topics.ACTION_TOPIC, new Message(Commands.Multiply(A.Value, B.Value)));
+                EventBus.Publish(new MultiplyIntegrationEvent(A.Value, B.Value));
                 break;
             case "/":
-              //  MessageBusService.Send(Topics.ACTION_TOPIC, new Message(Commands.Divide(A.Value, B.Value)));
+                EventBus.Publish(new DivideIntegrationEvent(A.Value, B.Value));
                 break;
             default:
                 return;

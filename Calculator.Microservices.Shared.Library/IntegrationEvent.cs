@@ -4,17 +4,19 @@ namespace Calculator.Microservices.Shared.Library
 {
     public record IntegrationEvent
     {
-        public IntegrationEvent()
+        public IntegrationEvent(string target)
         {
             Id = Guid.NewGuid();
             CreationDate = DateTime.UtcNow;
+            Target = target;
         }
 
         [JsonConstructor]
-        public IntegrationEvent(Guid id, DateTime createDate)
+        public IntegrationEvent(Guid id, DateTime createDate, string target)
         {
             Id = id;
             CreationDate = createDate;
+            Target = target;
         }
 
         [JsonInclude]
@@ -22,5 +24,8 @@ namespace Calculator.Microservices.Shared.Library
 
         [JsonInclude]
         public DateTime CreationDate { get; private init; }
+
+        [JsonInclude]
+        public string Target { get; private init; }
     }
 }

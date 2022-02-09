@@ -21,20 +21,21 @@ namespace Calculator.Microservices.Shared.RabbitMQ
         private readonly IEventBusSubscriptionsManager _subscriptionsManager;
         private readonly int _retryCount;
 
+        private string? _target;
+
         private IModel _consumerChannel;
-        private string? _queueName;
 
         private bool _disposed;
 
         public EventBusRabbitMQ(IRabbitMQPersistentConnection persistentConnection, ILogger<EventBusRabbitMQ> logger,
                                 IServiceProvider serviceProvider, IEventBusSubscriptionsManager? subscriptionsManager,
-                                string? queueName = null, int retryCount = 5)
+                                string target, int retryCount = 5)
         {
             _persistentConnection = persistentConnection;
             _logger = logger;
             _serviceProvider = serviceProvider;
             _subscriptionsManager = subscriptionsManager ?? new InMemoryEventBusSubscriptionsManager();
-            _queueName = queueName ?? BROKER_NAME;
+            _target = target;
             _consumerChannel = CreateConsumerChannel();
             _retryCount = retryCount;
             _subscriptionsManager.OnEventRemoved += SubsManager_OnEventRemoved;
@@ -107,9 +108,9 @@ namespace Calculator.Microservices.Shared.RabbitMQ
                     _persistentConnection.TryConnect();
                 }
 
-                _consumerChannel.QueueBind(queue: _queueName,
-                                    exchange: BROKER_NAME,
-                                    routingKey: eventName);
+                _consumerChannel.QueueBind(queue: _target,
+                                           exchange: BROKER_NAME,
+                                           routingKey: eventName);
             }
         }
 
@@ -133,13 +134,13 @@ namespace Calculator.Microservices.Shared.RabbitMQ
 
             using (var channel = _persistentConnection.CreateModel())
             {
-                channel.QueueUnbind(queue: _queueName,
-                    exchange: BROKER_NAME,
-                    routingKey: eventName);
+                channel.QueueUnbind(queue: _target,
+                                    exchange: BROKER_NAME,
+                                    routingKey: eventName);
 
                 if (_subscriptionsManager.IsEmpty)
                 {
-                    _queueName = string.Empty;
+                    _target = string.Empty;
                     _consumerChannel.Close();
                 }
             }
@@ -159,11 +160,11 @@ namespace Calculator.Microservices.Shared.RabbitMQ
             channel.ExchangeDeclare(exchange: BROKER_NAME,
                                     type: "direct");
 
-            channel.QueueDeclare(queue: _queueName,
-                                    durable: true,
-                                    exclusive: false,
-                                    autoDelete: false,
-                                    arguments: null);
+            channel.QueueDeclare(queue: _target,
+                                 durable: true,
+                                 exclusive: false,
+                                 autoDelete: false,
+                                 arguments: null);
 
             channel.CallbackException += (sender, ea) =>
             {
@@ -188,7 +189,7 @@ namespace Calculator.Microservices.Shared.RabbitMQ
                 consumer.Received += Consumer_Received;
 
                 _consumerChannel.BasicConsume(
-                    queue: _queueName,
+                    queue: _target,
                     autoAck: false,
                     consumer: consumer);
             }

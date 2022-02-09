@@ -6,7 +6,7 @@ namespace Calculator.Microservices.Shared.IntegrationEvents.Events
     {
         public double C { get; init; }
 
-        public ResultIntegrationEvent(double c)
+        public ResultIntegrationEvent(double c) : base("result")
         {
             C = c;
         }

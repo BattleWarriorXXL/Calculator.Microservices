@@ -11,13 +11,11 @@ namespace Calculator.Microservices.Shared.Kafka
 {
     public class EventBusKafka : IEventBus
     {
-        const string DEFAULT_TOPIC_NAME = "calculator_default_topic";
-
         private readonly IKafkaPersistentConnection _persistentConnection;
         private readonly ILogger<EventBusKafka> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventBusSubscriptionsManager _subscriptionsManager;
-        private readonly string _topicName;
+        private readonly string _target;
         private readonly int _retryCount;
 
         private IConsumer<string, byte[]> _consumer;
@@ -26,13 +24,13 @@ namespace Calculator.Microservices.Shared.Kafka
 
         public EventBusKafka(IKafkaPersistentConnection persistentConnection, ILogger<EventBusKafka> logger,
                              IServiceProvider serviceProvider, IEventBusSubscriptionsManager subscriptionsManager,
-                             string? topicName = null, int retryCount = 5)
+                             string target, int retryCount = 5)
         {
             _persistentConnection = persistentConnection;
             _logger = logger;
             _serviceProvider = serviceProvider;
             _subscriptionsManager = subscriptionsManager;
-            _topicName = topicName ?? DEFAULT_TOPIC_NAME;
+            _target = target;
             _retryCount = retryCount;
             
             _consumer = GetConsumer();
@@ -69,7 +67,7 @@ namespace Calculator.Microservices.Shared.Kafka
                     {
                         _logger.LogTrace("Publishing event to Kafka: {EventId}", @event.Id);
 
-                       await producer.ProduceAsync(_topicName, new Message<string, byte[]> { Key = eventName, Value = body });
+                       await producer.ProduceAsync(@event.Target, new Message<string, byte[]> { Key = eventName, Value = body });
                     });
                 }
             });
@@ -98,7 +96,7 @@ namespace Calculator.Microservices.Shared.Kafka
                     _persistentConnection.TryConnect();
                 }
 
-                _consumer.Assign(new List<TopicPartitionOffset> { new TopicPartitionOffset(_topicName, 0, -1) });
+                _consumer.Assign(new List<TopicPartitionOffset> { new TopicPartitionOffset(_target, 0, -1) });
             }
         }
 

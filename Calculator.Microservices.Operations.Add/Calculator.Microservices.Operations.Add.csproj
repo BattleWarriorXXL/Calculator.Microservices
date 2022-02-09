@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Calculator.Microservices.Shared.Extensions\Calculator.Microservices.Shared.Extensions.csproj" />
     <ProjectReference Include="..\Calculator.Microservices.Shared.IntegrationEvents\Calculator.Microservices.Shared.IntegrationEvents.csproj" />
     <ProjectReference Include="..\Calculator.Microservices.Shared.Kafka\Calculator.Microservices.Shared.Kafka.csproj" />
     <ProjectReference Include="..\Calculator.Microservices.Shared.RabbitMQ\Calculator.Microservices.Shared.RabbitMQ.csproj" />

@@ -2,12 +2,12 @@
 
 namespace Calculator.Microservices.Shared.IntegrationEvents.Events
 {
-    public record AddIntegrationEvent : IntegrationEvent
+    public record MultiplyIntegrationEvent : IntegrationEvent
     {
         public double A { get; init; }
         public double B { get; init; }
 
-        public AddIntegrationEvent(double a, double b) : base("add")
+        public MultiplyIntegrationEvent(double a, double b) : base("multiply")
         {
             A = a;
             B = b;
