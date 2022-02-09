@@ -8,9 +8,6 @@ using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
-
 if ("kafka" == "kafka")
 {
     builder.Services.AddSingleton<IKafkaPersistentConnection>(sp =>
@@ -74,27 +71,15 @@ else if ("rabbitmq" == "rabbitmq")
 
 builder.Services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
 
-builder.Services.AddTransient<ResultIntegrationEventHandler>();
+builder.Services.AddTransient<AddIntegrationEventHandler>();
 
 var app = builder.Build();
 ConfigureEventBus(app);
 
+app.Run();
+
 void ConfigureEventBus(IApplicationBuilder app)
 {
     var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-    eventBus.Subscribe<ResultIntegrationEvent, ResultIntegrationEventHandler>();
+    eventBus.Subscribe<AddIntegrationEvent, AddIntegrationEventHandler>();
 }
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-}
-
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
-
-app.Run();
