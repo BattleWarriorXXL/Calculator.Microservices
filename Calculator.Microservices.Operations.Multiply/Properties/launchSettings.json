@@ -1,10 +1,11 @@
-{
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "Calculator.Microservices.Client.Web": {
+    "Calculator.Microservices.Multiply": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "applicationUrl": "http://localhost:5219",
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5039",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "EVENT_BUS_RETRY_COUNT": "5",
@@ -12,10 +13,10 @@
 
         "KAFKA_BOOTSTRAP_SERVERS": "localhost:19092",
         "KAFKA_GROUP_ID": "custom-group",
-        "KAFKA_TOPIC": "result",
+        "KAFKA_TOPIC": "multiplying",
 
         "RABBITMQ_HOSTNAME": "localhost",
-        "RABBITMQ_QUEUE": "result"
+        "RABBITMQ_QUEUE": "multiplying"
       }
     }
   }

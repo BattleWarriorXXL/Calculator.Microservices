@@ -3,6 +3,8 @@ version: "3.8"
 networks: 
   kafka_network:
     name: kafka_network
+  rabbitmq_go_net:
+    driver: bridge  
 
 services:
   zookeeper:
@@ -52,70 +54,14 @@ services:
       KAFKA_BROKER_ID: ignored
       KAFKA_ZOOKEEPER_CONNECT: ignored
 
-  client.web:
-    image: battlewarriorxxl/calculator:client_web
-    build:
-      dockerfile: Calculator.Microservices.Client.Web/Dockerfile
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
     ports:
-      - "3000:80"
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
     networks:
-      - kafka_network
-    depends_on:
-      - kafka.setup
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-
-  client.console:
-    image: battlewarriorxxl/calculator:client_console
-    build:
-      dockerfile: Calculator.Microservices.Client.Console/Dockerfile
-    networks:
-      - kafka_network
-    depends_on:
-      - kafka.setup
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-
-  add:
-    image: battlewarriorxxl/calculator:add
-    build:
-      dockerfile: Calculator.Microservices.Operations.Add/Dockerfile
-    networks:
-      - kafka_network
-    depends_on:
-      - kafka.setup
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-
-  subtract:
-    image: battlewarriorxxl/calculator:subtract
-    build:
-      dockerfile: Calculator.Microservices.Operations.Subtract/Dockerfile
-    networks:
-      - kafka_network
-    depends_on:
-      - kafka.setup
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-
-  multiply:
-    image: battlewarriorxxl/calculator:multiply
-    build:
-      dockerfile: Calculator.Microservices.Operations.Multiply/Dockerfile
-    networks:
-      - kafka_network
-    depends_on:
-      - kafka.setup
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-
-  divide:
-    image: battlewarriorxxl/calculator:divide
-    build:
-      dockerfile: Calculator.Microservices.Operations.Divide/Dockerfile
-    networks:
-      - kafka_network
-    depends_on:
-      - kafka.setup
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
+        - rabbitmq_go_net
