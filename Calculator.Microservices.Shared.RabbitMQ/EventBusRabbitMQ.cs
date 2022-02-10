@@ -237,7 +237,7 @@ namespace Calculator.Microservices.Shared.RabbitMQ
                     var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
 
                     await Task.Yield();
-                    if (concreteType?.GetMethod("Handle")?.Invoke(handler, new object[] { integrationEvent }) is Task task)
+                    if (concreteType?.GetMethod("Handle")?.Invoke(handler, new object?[] { integrationEvent }) is Task task)
                     {
                         await task;
                     }

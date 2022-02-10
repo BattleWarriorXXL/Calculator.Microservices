@@ -54,7 +54,7 @@ namespace Calculator.Microservices.Shared.Kafka
 
             _logger.LogTrace("Using Kafka producer to publish event: {EventId} ({EventName})", @event.Id, eventName);
 
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 using (var producer = _persistentConnection.CreateProducer())
                 {
@@ -63,11 +63,12 @@ namespace Calculator.Microservices.Shared.Kafka
                         WriteIndented = true
                     });
 
-                    await policy.Execute(async () =>
+                    policy.Execute(() =>
                     {
                         _logger.LogTrace("Publishing event to Kafka: {EventId}", @event.Id);
 
-                       await producer.ProduceAsync(@event.Target, new Message<string, byte[]> { Key = eventName, Value = body });
+                       producer.Produce(@event.Target, new Message<string, byte[]> { Key = eventName, Value = body });
+                       producer.Flush();
                     });
                 }
             });

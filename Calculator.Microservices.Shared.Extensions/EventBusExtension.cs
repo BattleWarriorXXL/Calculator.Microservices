@@ -109,7 +109,17 @@ namespace Calculator.Microservices.Shared.Extensions
             return services;
         }
 
-        public static IApplicationBuilder UseEventBus<T, TH>(this IApplicationBuilder app)
+        public static IApplicationBuilder Subscribe<T, TH>(this IApplicationBuilder app)
+            where T : IntegrationEvent
+            where TH : IIntegrationEventHandler<T>
+        {
+            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+            eventBus.Subscribe<T, TH>();
+
+            return app;
+        }
+
+        public static IApplicationBuilder SubscribeWithCallback<T, TH, TC>(this IApplicationBuilder app)
             where T : IntegrationEvent
             where TH : IIntegrationEventHandler<T>
         {

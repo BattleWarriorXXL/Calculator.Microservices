@@ -1,7 +1,10 @@
 ﻿@page "/calculator"
+@using Calculator.Microservices.Client.Web.Services
 @using Calculator.Microservices.Shared.IntegrationEvents.Events
 @using Calculator.Microservices.Shared.Library
+@implements IDisposable
 @inject IEventBus EventBus
+@inject IMessageService MessageService
 
 <PageTitle>Calculator Bitch</PageTitle>
 
@@ -45,7 +48,16 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        MessageService.Subscribe(ShowResult);
+    }
 
+    private void ShowResult(object message)
+    {
+        if (message != null && message is string result)
+        {
+            Result = result;
+            InvokeAsync(() => StateHasChanged());
+        }
     }
 
     private void Execute()
@@ -61,7 +73,7 @@
                 EventBus.Publish(new AddIntegrationEvent(A.Value, B.Value));
                 break;
             case "-":
-                 EventBus.Publish(new SubtractIntegrationEvent(A.Value, B.Value));
+                EventBus.Publish(new SubtractIntegrationEvent(A.Value, B.Value));
                 break;
             case "*":
                 EventBus.Publish(new MultiplyIntegrationEvent(A.Value, B.Value));
@@ -72,5 +84,10 @@
             default:
                 return;
         }
+    }
+
+    public void Dispose()
+    {
+        MessageService.Unsubscribe(ShowResult);
     }
 }

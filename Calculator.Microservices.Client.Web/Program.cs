@@ -1,11 +1,14 @@
+using Calculator.Microservices.Client.Web.IntegrationEvents.EventHandling;
+using Calculator.Microservices.Client.Web.Services;
 using Calculator.Microservices.Shared.Extensions;
-using Calculator.Microservices.Shared.IntegrationEvents.EventHandling;
 using Calculator.Microservices.Shared.IntegrationEvents.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+builder.Services.AddSingleton<IMessageService, MessageService>();
 
 builder.Services.AddEventBus("result");
 builder.Services.AddTransient<ResultIntegrationEventHandler>();
@@ -17,7 +20,7 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
 }
 
-app.UseEventBus<ResultIntegrationEvent, ResultIntegrationEventHandler>();
+app.Subscribe<ResultIntegrationEvent, ResultIntegrationEventHandler>();
 
 app.UseStaticFiles();
 

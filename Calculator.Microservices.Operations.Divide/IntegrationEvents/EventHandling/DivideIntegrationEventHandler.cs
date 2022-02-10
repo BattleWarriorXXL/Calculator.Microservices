@@ -1,8 +1,7 @@
 ﻿using Calculator.Microservices.Shared.IntegrationEvents.Events;
 using Calculator.Microservices.Shared.Library;
-using Microsoft.Extensions.Logging;
 
-namespace Calculator.Microservices.Shared.IntegrationEvents.EventHandling
+namespace Calculator.Microservices.Operations.Divide.IntegrationEvents.EventHandling
 {
     public class DivideIntegrationEventHandler : IIntegrationEventHandler<DivideIntegrationEvent>
     {
