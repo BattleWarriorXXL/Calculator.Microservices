@@ -5,9 +5,12 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
 COPY ["Calculator.Microservices.Operations.Add/Calculator.Microservices.Operations.Add.csproj", "Calculator.Microservices.Operations.Add/"]
-COPY ["Calculator.Microservices.Shared.Kafka.Library/Calculator.Microservices.Shared.Kafka.Library.csproj", "Calculator.Microservices.Shared.Kafka.Library/"]
-COPY ["Calculator.Microservices.Shared.Kafka.Topics/Calculator.Microservices.Shared.Kafka.Topics.csproj", "Calculator.Microservices.Shared.Kafka.Topics/"]
-COPY ["Calculator.Microservices.Shared.Kafka.Commands/Calculator.Microservices.Shared.Kafka.Commands.csproj", "Calculator.Microservices.Shared.Kafka.Commands/"]
+COPY ["Calculator.Microservices.Shared.Kafka/Calculator.Microservices.Shared.Kafka.csproj", "Calculator.Microservices.Shared.Kafka/"]
+COPY ["Calculator.Microservices.Shared.RabbitMQ/Calculator.Microservices.Shared.RabbitMQ.csproj", "Calculator.Microservices.Shared.RabbitMQ/"]
+COPY ["Calculator.Microservices.Shared.Extensions/Calculator.Microservices.Shared.Extensions.csproj", "Calculator.Microservices.Shared.Extensions/"]
+COPY ["Calculator.Microservices.Shared.Library/Calculator.Microservices.Shared.Library.csproj", "Calculator.Microservices.Shared.Library/"]
+COPY ["Calculator.Microservices.Shared.IntegrationEvents/Calculator.Microservices.Shared.IntegrationEvents.csproj", "Calculator.Microservices.Shared.IntegrationEvents/"]
+
 
 RUN dotnet restore "Calculator.Microservices.Operations.Add/Calculator.Microservices.Operations.Add.csproj"
 

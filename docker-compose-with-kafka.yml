@@ -21,7 +21,6 @@ services:
     container_name: kafka
     ports:
       - "9092:9092"
-      - "19092:19092"
     networks: 
       - kafka_network
     depends_on:
@@ -30,7 +29,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONNECTIONS_FROM_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,CONNECTIONS_FROM_HOST://localhost:19092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
@@ -63,18 +62,10 @@ services:
     depends_on:
       - kafka.setup
     environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-
-  client.console:
-    image: battlewarriorxxl/calculator:client_console
-    build:
-      dockerfile: Calculator.Microservices.Client.Console/Dockerfile
-    networks:
-      - kafka_network
-    depends_on:
-      - kafka.setup
-    environment:
-      BOOTSTRAP_SERVERS: kafka:9092
+      BROKER_TYPE: KAFKA
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_GROUP_ID: custom
+      EVENT_BUS_RETRY_COUNT: 5
 
   add:
     image: battlewarriorxxl/calculator:add
@@ -85,7 +76,10 @@ services:
     depends_on:
       - kafka.setup
     environment:
-      BOOTSTRAP_SERVERS: kafka:9092
+      BROKER_TYPE: KAFKA
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_GROUP_ID: custom
+      EVENT_BUS_RETRY_COUNT: 5
 
   subtract:
     image: battlewarriorxxl/calculator:subtract
@@ -96,7 +90,10 @@ services:
     depends_on:
       - kafka.setup
     environment:
-      BOOTSTRAP_SERVERS: kafka:9092
+      BROKER_TYPE: KAFKA
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_GROUP_ID: custom
+      EVENT_BUS_RETRY_COUNT: 5
 
   multiply:
     image: battlewarriorxxl/calculator:multiply
@@ -107,7 +104,10 @@ services:
     depends_on:
       - kafka.setup
     environment:
-      BOOTSTRAP_SERVERS: kafka:9092
+      BROKER_TYPE: KAFKA
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_GROUP_ID: custom
+      EVENT_BUS_RETRY_COUNT: 5
 
   divide:
     image: battlewarriorxxl/calculator:divide
@@ -118,4 +118,7 @@ services:
     depends_on:
       - kafka.setup
     environment:
-      BOOTSTRAP_SERVERS: kafka:9092
+      BROKER_TYPE: KAFKA
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_GROUP_ID: custom
+      EVENT_BUS_RETRY_COUNT: 5
