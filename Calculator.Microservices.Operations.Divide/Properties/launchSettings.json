@@ -9,14 +9,12 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "EVENT_BUS_RETRY_COUNT": "5",
-        "BROKER_NAME": "KAFKA",
+        "BROKER_TYPE": "RABBITMQ",
 
         "KAFKA_BOOTSTRAP_SERVERS": "localhost:19092",
         "KAFKA_GROUP_ID": "custom-group",
-        "KAFKA_TOPIC": "dividing",
 
-        "RABBITMQ_HOSTNAME": "localhost",
-        "RABBITMQ_QUEUE": "dividing"
+        "RABBITMQ_HOSTNAME": "localhost"
       }
     }
   }

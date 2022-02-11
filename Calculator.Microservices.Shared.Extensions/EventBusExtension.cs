@@ -13,7 +13,7 @@ namespace Calculator.Microservices.Shared.Extensions
     {
         public static IServiceCollection AddEventBus(this IServiceCollection services, string target)
         {
-            switch (Environment.GetEnvironmentVariable("BROKER_NAME"))
+            switch (Environment.GetEnvironmentVariable("BROKER_TYPE"))
             {
                 case "KAFKA":
                     var bootstrapServers = Environment.GetEnvironmentVariable("KAFKA_BOOTSTRAP_SERVERS");
@@ -21,6 +21,7 @@ namespace Calculator.Microservices.Shared.Extensions
                     {
                         throw new ArgumentNullException(nameof(bootstrapServers));
                     }
+
                     var groupId = Environment.GetEnvironmentVariable("KAFKA_GROUP_ID");
                     if (groupId == null)
                     {
@@ -62,15 +63,11 @@ namespace Calculator.Microservices.Shared.Extensions
                     break;
                 case "RABBITMQ":
                     var hostName = Environment.GetEnvironmentVariable("RABBITMQ_HOSTNAME");
-                    var rabbitmqQueue = Environment.GetEnvironmentVariable("RABBITMQ_QUEUE");
-                    if (rabbitmqQueue == null)
-                    {
-                        throw new ArgumentNullException(nameof(rabbitmqQueue));
-                    }
                     if (hostName == null)
                     {
                         throw new ArgumentNullException(nameof(hostName));
                     }
+
                     services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
                     {
                         var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
@@ -101,7 +98,7 @@ namespace Calculator.Microservices.Shared.Extensions
                     });
                     break;
                 default:
-                    throw new ArgumentException("BROKER_NAME");
+                    throw new ArgumentException("BROKER_TYPE");
             }
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
