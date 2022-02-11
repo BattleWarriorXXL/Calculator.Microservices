@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Calculator.Microservices.Shared.Extensions\Calculator.Microservices.Shared.Extensions.csproj" />
     <ProjectReference Include="..\Calculator.Microservices.Shared.IntegrationEvents\Calculator.Microservices.Shared.IntegrationEvents.csproj" />
     <ProjectReference Include="..\Calculator.Microservices.Shared.Kafka\Calculator.Microservices.Shared.Kafka.csproj" />
