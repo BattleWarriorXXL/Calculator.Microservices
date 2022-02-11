@@ -1,3 +1,6 @@
+---
+--- # zookeeper
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -42,6 +45,8 @@ spec:
           value: "2181"
         - name: ZOOKEEPER_TICK_TIME
           value: "2000"
+---
+--- # kafka
 ---
 apiVersion: v1
 kind: Service
@@ -104,6 +109,48 @@ spec:
               - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
                 value: "true"
 ---
+--- # rabbitmq
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: rabbitmq-service
+  name: rabbitmq-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: rabbitmq-port
+    port: 5672
+    nodePort: 30093
+    targetPort: 5672
+  selector:
+    app: rabbitmq
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: rabbitmq
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management-alpine
+        ports:
+        - containerPort: 5672
+---
+--- # Web Client
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -146,8 +193,18 @@ spec:
         ports:
           - containerPort: 80
         env:
-        - name: BOOTSTRAP_SERVERS
+        - name: BROKER_TYPE
+          value: KAFKA
+        - name: EVENT_BUS_RETRY_COUNT
+          value: 5
+        - name: KAFKA_BOOTSTRAP_SERVERS
           value: kafka-service:9092
+        - name: KAFKA_GROUP_ID
+          value: custom-group
+        - name: RABBITMQ_HOSTNAME
+          value: rabbitmq-service
+---
+--- # Add Service
 ---
 apiVersion: v1
 kind: Service
@@ -191,8 +248,18 @@ spec:
         ports:
           - containerPort: 80
         env:
-        - name: BOOTSTRAP_SERVERS
+        - name: BROKER_TYPE
+          value: KAFKA
+        - name: EVENT_BUS_RETRY_COUNT
+          value: 5
+        - name: KAFKA_BOOTSTRAP_SERVERS
           value: kafka-service:9092
+        - name: KAFKA_GROUP_ID
+          value: custom-group
+        - name: RABBITMQ_HOSTNAME
+          value: rabbitmq-service
+---
+--- # Subtract Service
 ---
 apiVersion: v1
 kind: Service
@@ -236,8 +303,18 @@ spec:
         ports:
           - containerPort: 80
         env:
-        - name: BOOTSTRAP_SERVERS
+       - name: BROKER_TYPE
+          value: KAFKA
+        - name: EVENT_BUS_RETRY_COUNT
+          value: 5
+        - name: KAFKA_BOOTSTRAP_SERVERS
           value: kafka-service:9092
+        - name: KAFKA_GROUP_ID
+          value: custom-group
+        - name: RABBITMQ_HOSTNAME
+          value: rabbitmq-service
+---
+--- # Multiply Service
 ---
 apiVersion: v1
 kind: Service
@@ -281,8 +358,18 @@ spec:
         ports:
           - containerPort: 80
         env:
-        - name: BOOTSTRAP_SERVERS
+       - name: BROKER_TYPE
+          value: KAFKA
+        - name: EVENT_BUS_RETRY_COUNT
+          value: 5
+        - name: KAFKA_BOOTSTRAP_SERVERS
           value: kafka-service:9092
+        - name: KAFKA_GROUP_ID
+          value: custom-group
+        - name: RABBITMQ_HOSTNAME
+          value: rabbitmq-service
+---
+--- # Divide Service
 ---
 apiVersion: v1
 kind: Service
@@ -326,6 +413,14 @@ spec:
         ports:
           - containerPort: 80
         env:
-        - name: BOOTSTRAP_SERVERS
+        - name: BROKER_TYPE
+          value: KAFKA
+        - name: EVENT_BUS_RETRY_COUNT
+          value: 5
+        - name: KAFKA_BOOTSTRAP_SERVERS
           value: kafka-service:9092
+        - name: KAFKA_GROUP_ID
+          value: custom-group
+        - name: RABBITMQ_HOSTNAME
+          value: rabbitmq-service
 ---

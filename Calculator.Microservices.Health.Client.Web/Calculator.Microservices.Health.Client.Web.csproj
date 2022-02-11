@@ -7,12 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="6.0.2" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Calculator.Microservices.Shared.Extensions\Calculator.Microservices.Shared.Extensions.csproj" />
-    <ProjectReference Include="..\Calculator.Microservices.Shared.IntegrationEvents\Calculator.Microservices.Shared.IntegrationEvents.csproj" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="6.0.2" />
+    <PackageReference Include="AspNetCore.HealthChecks.Uris" Version="6.0.2" />
   </ItemGroup>
 
 </Project>
