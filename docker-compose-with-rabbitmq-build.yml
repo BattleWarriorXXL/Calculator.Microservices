@@ -1,0 +1,85 @@
+version: "3.8"
+
+networks: 
+  rabbitmq_net:
+    name: rabbitmq_net  
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - "5672:5672"
+        - "15672:15672"
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+        - rabbitmq_net
+
+  client.web:
+    image: battlewarriorxxl/calculator:client_web
+    build:
+      dockerfile: Calculator.Microservices.Client.Web/Dockerfile
+    ports:
+      - "3000:80"
+    networks:
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+    environment:
+      BROKER_TYPE: RABBITMQ
+      RABBITMQ_HOSTNAME: localhost
+      EVENT_BUS_RETRY_COUNT: 5
+
+  add:
+    image: battlewarriorxxl/calculator:add
+    build:
+      dockerfile: Calculator.Microservices.Operations.Add/Dockerfile
+    networks:
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+    environment:
+      BROKER_TYPE: RABBITMQ
+      RABBITMQ_HOSTNAME: localhost
+      EVENT_BUS_RETRY_COUNT: 5
+
+  subtract:
+    image: battlewarriorxxl/calculator:subtract
+    build:
+      dockerfile: Calculator.Microservices.Operations.Subtract/Dockerfile
+    networks:
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+    environment:
+      BROKER_TYPE: RABBITMQ
+      RABBITMQ_HOSTNAME: localhost
+      EVENT_BUS_RETRY_COUNT: 5
+
+  multiply:
+    image: battlewarriorxxl/calculator:multiply
+    build:
+      dockerfile: Calculator.Microservices.Operations.Multiply/Dockerfile
+    networks:
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+    environment:
+      BROKER_TYPE: RABBITMQ
+      RABBITMQ_HOSTNAME: localhost
+      EVENT_BUS_RETRY_COUNT: 5
+
+  divide:
+    image: battlewarriorxxl/calculator:divide
+    build:
+      dockerfile: Calculator.Microservices.Operations.Divide/Dockerfile
+    networks:
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+    environment:
+      BROKER_TYPE: RABBITMQ
+      RABBITMQ_HOSTNAME: localhost
+      EVENT_BUS_RETRY_COUNT: 5

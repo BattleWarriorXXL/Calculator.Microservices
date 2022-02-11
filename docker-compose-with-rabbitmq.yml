@@ -1,0 +1,75 @@
+version: "3.8"
+
+networks: 
+  rabbitmq_net:
+    name: rabbitmq_net  
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    hostname: rabbitmq
+    ports:
+        - "5672:5672"
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+        - rabbitmq_net
+
+  client.web:
+    image: battlewarriorxxl/calculator:client_web
+    ports:
+      - "3000:80"
+    networks:
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+    environment:
+      BROKER_TYPE: RABBITMQ
+      RABBITMQ_HOSTNAME: rabbitmq
+      EVENT_BUS_RETRY_COUNT: 5
+
+  add:
+    image: battlewarriorxxl/calculator:add
+    networks:
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+    environment:
+      BROKER_TYPE: RABBITMQ
+      RABBITMQ_HOSTNAME: rabbitmq
+      EVENT_BUS_RETRY_COUNT: 5
+
+  subtract:
+    image: battlewarriorxxl/calculator:subtract
+    networks:
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+    environment:
+      BROKER_TYPE: RABBITMQ
+      RABBITMQ_HOSTNAME: rabbitmq
+      EVENT_BUS_RETRY_COUNT: 5
+
+  multiply:
+    image: battlewarriorxxl/calculator:multiply
+    networks:
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+    environment:
+      BROKER_TYPE: RABBITMQ
+      RABBITMQ_HOSTNAME: rabbitmq
+      EVENT_BUS_RETRY_COUNT: 5
+
+  divide:
+    image: battlewarriorxxl/calculator:divide
+    networks:
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+    environment:
+      BROKER_TYPE: RABBITMQ
+      RABBITMQ_HOSTNAME: rabbitmq
+      EVENT_BUS_RETRY_COUNT: 5
