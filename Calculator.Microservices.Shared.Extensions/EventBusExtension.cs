@@ -3,6 +3,7 @@ using Calculator.Microservices.Shared.Library;
 using Calculator.Microservices.Shared.RabbitMQ;
 using Confluent.Kafka;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -11,22 +12,18 @@ namespace Calculator.Microservices.Shared.Extensions
 {
     public static class EventBusExtension
     {
-        public static IServiceCollection AddEventBus(this IServiceCollection services, string target)
+        public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
         {
-            switch (Environment.GetEnvironmentVariable("BROKER_TYPE"))
+            switch (configuration["BROKER_TYPE"])
             {
                 case "KAFKA":
-                    var bootstrapServers = Environment.GetEnvironmentVariable("KAFKA_BOOTSTRAP_SERVERS");
+                    var bootstrapServers = configuration["KAFKA_BOOTSTRAP_SERVERS"];
                     if (bootstrapServers == null)
                     {
                         throw new ArgumentNullException(nameof(bootstrapServers));
                     }
 
-                    var groupId = Environment.GetEnvironmentVariable("KAFKA_GROUP_ID");
-                    if (groupId == null)
-                    {
-                        throw new ArgumentNullException(nameof(groupId));
-                    }
+                    var groupId = configuration["KAFKA_GROUP_ID"] ?? "custom-group";
 
                     services.AddSingleton<IKafkaPersistentConnection>(sp =>
                     {
@@ -53,16 +50,16 @@ namespace Calculator.Microservices.Shared.Extensions
                         var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
 
                         var retryCount = 5;
-                        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EVENT_BUS_RETRY_COUNT")))
+                        if (!string.IsNullOrEmpty(configuration["EVENT_BUS_RETRY_COUNT"]))
                         {
-                            retryCount = int.Parse(Environment.GetEnvironmentVariable("EVENT_BUS_RETRY_COUNT")!);
+                            retryCount = int.Parse(configuration["EVENT_BUS_RETRY_COUNT"]);
                         }
 
-                        return new EventBusKafka(kafkaPersistentConnection, logger, sp, eventBusSubcriptionsManager, target, retryCount);
+                        return new EventBusKafka(kafkaPersistentConnection, logger, sp, eventBusSubcriptionsManager, configuration["TARGET"], retryCount);
                     });
                     break;
                 case "RABBITMQ":
-                    var hostName = Environment.GetEnvironmentVariable("RABBITMQ_HOSTNAME");
+                    var hostName = configuration["RABBITMQ_HOSTNAME"];
                     if (hostName == null)
                     {
                         throw new ArgumentNullException(nameof(hostName));
@@ -89,12 +86,12 @@ namespace Calculator.Microservices.Shared.Extensions
                         var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
 
                         var retryCount = 5;
-                        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EVENT_BUS_RETRY_COUNT")))
+                        if (!string.IsNullOrEmpty(configuration["EVENT_BUS_RETRY_COUNT"]))
                         {
-                            retryCount = int.Parse(Environment.GetEnvironmentVariable("EVENT_BUS_RETRY_COUNT")!);
+                            retryCount = int.Parse(configuration["EVENT_BUS_RETRY_COUNT"]!);
                         }
 
-                        return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, sp, eventBusSubcriptionsManager, target, retryCount);
+                        return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, sp, eventBusSubcriptionsManager, configuration["TARGET"], retryCount);
                     });
                     break;
                 default:

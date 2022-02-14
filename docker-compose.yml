@@ -1,0 +1,181 @@
+version: "3.8"
+
+networks: 
+  kafka_network:
+    name: kafka_network
+  rabbitmq_network:
+    name: rabbitmq_network  
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.2.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    networks: 
+      - kafka_network
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:6.2.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "19092:19092"
+    networks: 
+      - kafka_network
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONNECTIONS_FROM_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,CONNECTIONS_FROM_HOST://localhost:19092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  kafka.setup:
+    image: confluentinc/cp-kafka:6.2.0
+    container_name: kafka.setup
+    networks: 
+      - kafka_network
+    depends_on:
+      - zookeeper
+      - kafka
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       cub kafka-ready -b kafka:9092 1 20 && \
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic result && \
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic add && \
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic subtract && \
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic multiply && \
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic divide'"
+    environment:
+      KAFKA_BROKER_ID: ignored
+      KAFKA_ZOOKEEPER_CONNECT: ignored
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbitmq
+    container_name: 'rabbitmq'
+    ports:
+        - "5672:5672"
+        - "15672:15672"
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+        - rabbitmq_network
+
+  client.web:
+    image: battlewarriorxxl/calculator:client_web
+    container_name: client.web
+    build:
+      dockerfile: Calculator.Microservices.Client.Web/Dockerfile
+    ports:
+      - "3000:80"
+    networks:
+      - rabbitmq_network
+      - kafka_network
+    depends_on:
+      - kafka.setup
+    environment:
+      TARGET: result
+      BROKER_TYPE: KAFKA
+      RABBITMQ_HOSTNAME: rabbitmq
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EVENT_BUS_RETRY_COUNT: 5
+
+  client.web.health:
+    image: battlewarriorxxl/calculator:client_web_health
+    container_name: client.web.health
+    build:
+      dockerfile: Calculator.Microservices.Client.Web.Health/Dockerfile
+    ports:
+      - "3001:80"
+    networks:
+      - rabbitmq_network
+      - kafka_network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - HealthChecksUI__HealthChecks__0__Name=Web Client
+      - HealthChecksUI__HealthChecks__0__Uri=http://client.web/hc
+      - HealthChecksUI__HealthChecks__1__Name=Add Service
+      - HealthChecksUI__HealthChecks__1__Uri=http://add/hc
+      - HealthChecksUI__HealthChecks__2__Name=Subtract Service
+      - HealthChecksUI__HealthChecks__2__Uri=http://subtract/hc
+      - HealthChecksUI__HealthChecks__3__Name=Multiply Service
+      - HealthChecksUI__HealthChecks__3__Uri=http://multiply/hc
+      - HealthChecksUI__HealthChecks__4__Name=Divide Service
+      - HealthChecksUI__HealthChecks__4__Uri=http://divide/hc
+
+  add:
+    image: battlewarriorxxl/calculator:add
+    container_name: add
+    build:
+      dockerfile: Calculator.Microservices.Operations.Add/Dockerfile
+    networks:
+      - rabbitmq_network
+      - kafka_network
+    depends_on:
+      - rabbitmq
+    environment:
+      TARGET: add
+      BROKER_TYPE: KAFKA
+      RABBITMQ_HOSTNAME: rabbitmq
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EVENT_BUS_RETRY_COUNT: 5
+
+  subtract:
+    image: battlewarriorxxl/calculator:subtract
+    container_name: subtract
+    build:
+      dockerfile: Calculator.Microservices.Operations.Subtract/Dockerfile
+    networks:
+      - rabbitmq_network
+      - kafka_network
+    depends_on:
+      - rabbitmq
+    environment:
+      TARGET: subtract
+      BROKER_TYPE: KAFKA
+      RABBITMQ_HOSTNAME: rabbitmq
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EVENT_BUS_RETRY_COUNT: 5
+
+  multiply:
+    image: battlewarriorxxl/calculator:multiply
+    container_name: multiply
+    build:
+      dockerfile: Calculator.Microservices.Operations.Multiply/Dockerfile
+    networks:
+      - rabbitmq_network
+      - kafka_network
+    depends_on:
+      - rabbitmq
+    environment:
+      TARGET: multiply
+      BROKER_TYPE: KAFKA
+      RABBITMQ_HOSTNAME: rabbitmq
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EVENT_BUS_RETRY_COUNT: 5
+
+  divide:
+    image: battlewarriorxxl/calculator:divide
+    container_name: divide
+    build:
+      dockerfile: Calculator.Microservices.Operations.Divide/Dockerfile
+    networks:
+      - rabbitmq_network
+      - kafka_network
+    depends_on:
+      - rabbitmq
+    environment:
+      TARGET: divide
+      BROKER_TYPE: KAFKA
+      RABBITMQ_HOSTNAME: rabbitmq
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EVENT_BUS_RETRY_COUNT: 5
