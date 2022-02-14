@@ -48,8 +48,11 @@ services:
       - kafka
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                        cub kafka-ready -b kafka:9092 1 20 && \
-                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic action_topic && \
-                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic result_topic'"
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic result && \
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic add && \
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic subtract && \
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic multiply && \
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic divide'"
     environment:
       KAFKA_BROKER_ID: ignored
       KAFKA_ZOOKEEPER_CONNECT: ignored
@@ -76,11 +79,14 @@ services:
       - "3000:80"
     networks:
       - rabbitmq_network
+      - kafka_network
     depends_on:
       - kafka.setup
     environment:
-      BROKER_TYPE: RABBITMQ
+      TARGET: result
+      BROKER_TYPE: KAFKA
       RABBITMQ_HOSTNAME: rabbitmq
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
 
   client.web.health:
@@ -92,7 +98,9 @@ services:
       - "3001:80"
     networks:
       - rabbitmq_network
+      - kafka_network
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - HealthChecksUI__HealthChecks__0__Name=Web Client
       - HealthChecksUI__HealthChecks__0__Uri=http://client.web/hc
       - HealthChecksUI__HealthChecks__1__Name=Add Service
@@ -111,11 +119,14 @@ services:
       dockerfile: Calculator.Microservices.Operations.Add/Dockerfile
     networks:
       - rabbitmq_network
+      - kafka_network
     depends_on:
       - rabbitmq
     environment:
-      BROKER_TYPE: RABBITMQ
+      TARGET: add
+      BROKER_TYPE: KAFKA
       RABBITMQ_HOSTNAME: rabbitmq
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
 
   subtract:
@@ -125,11 +136,14 @@ services:
       dockerfile: Calculator.Microservices.Operations.Subtract/Dockerfile
     networks:
       - rabbitmq_network
+      - kafka_network
     depends_on:
       - rabbitmq
     environment:
-      BROKER_TYPE: RABBITMQ
+      TARGET: subtract
+      BROKER_TYPE: KAFKA
       RABBITMQ_HOSTNAME: rabbitmq
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
 
   multiply:
@@ -139,11 +153,14 @@ services:
       dockerfile: Calculator.Microservices.Operations.Multiply/Dockerfile
     networks:
       - rabbitmq_network
+      - kafka_network
     depends_on:
       - rabbitmq
     environment:
-      BROKER_TYPE: RABBITMQ
+      TARGET: multiply
+      BROKER_TYPE: KAFKA
       RABBITMQ_HOSTNAME: rabbitmq
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
 
   divide:
@@ -153,9 +170,12 @@ services:
       dockerfile: Calculator.Microservices.Operations.Divide/Dockerfile
     networks:
       - rabbitmq_network
+      - kafka_network
     depends_on:
       - rabbitmq
     environment:
-      BROKER_TYPE: RABBITMQ
+      TARGET: divide
+      BROKER_TYPE: KAFKA
       RABBITMQ_HOSTNAME: rabbitmq
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5

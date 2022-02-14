@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddControllers();
+
+builder.Services.AddMvc()
+            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
 builder.Services.AddOptions();
 builder.Services.AddHealthChecks()

@@ -2,21 +2,28 @@ using Calculator.Microservices.Client.Web.IntegrationEvents.EventHandling;
 using Calculator.Microservices.Client.Web.Services;
 using Calculator.Microservices.Shared.Extensions;
 using Calculator.Microservices.Shared.IntegrationEvents.Events;
+using Confluent.Kafka;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 builder.Services.AddHealthChecks()
-                .AddCheck("self", () => HealthCheckResult.Healthy());
+                .AddCheck("self", () => HealthCheckResult.Healthy())
+                .AddRabbitMQ(name: "rabbitmq_client_web", rabbitConnectionString: $"amqp://{configuration["RABBITMQ_HOSTNAME"]}")
+                .AddKafka(
+                    new ProducerConfig { BootstrapServers = configuration["KAFKA_BOOTSTRAP_SERVERS"] },
+                    name: "kafka_client_web"
+                 );
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddSingleton<IMessageService, MessageService>();
 
-builder.Services.AddEventBus("result");
+builder.Services.AddEventBus(configuration);
 builder.Services.AddTransient<ResultIntegrationEventHandler>();
 
 var app = builder.Build();

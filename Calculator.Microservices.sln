@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Sh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Shared.IntegrationEvents", "Calculator.Microservices.Shared.IntegrationEvents\Calculator.Microservices.Shared.IntegrationEvents.csproj", "{8323EABA-D483-4EB9-B2BD-216AEF7D6CD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator.Microservices.Client.Web.Health", "Calculator.Microservices.Client.Web.Health\Calculator.Microservices.Client.Web.Health.csproj", "{C5C329A1-548C-46C4-81FA-7254A56521B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Client.Web.Health", "Calculator.Microservices.Client.Web.Health\Calculator.Microservices.Client.Web.Health.csproj", "{C5C329A1-548C-46C4-81FA-7254A56521B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

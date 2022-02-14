@@ -173,7 +173,7 @@ metadata:
   labels:
     app: client-web
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: client-web
@@ -193,16 +193,83 @@ spec:
         ports:
           - containerPort: 80
         env:
+        - name: TARGET
+          value: result
         - name: BROKER_TYPE
-          value: KAFKA
+          value: RABBITMQ
         - name: EVENT_BUS_RETRY_COUNT
-          value: 5
+          value: "5"
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: kafka-service:9092
         - name: KAFKA_GROUP_ID
           value: custom-group
         - name: RABBITMQ_HOSTNAME
           value: rabbitmq-service
+---
+--- # Web Client Health
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: client-web-health-service
+  name: client-web-health-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: client-web-health-port
+    port: 80
+    targetPort: 80
+  selector:
+    app: client-web-health
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-web-health
+  labels:
+    app: client-web-health
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client-web-health
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: client-web-health
+    spec:
+      containers:
+      - name: client-web-health
+        image: battlewarriorxxl/calculator:client_web_health
+        ports:
+          - containerPort: 80
+        env:
+        - name: HealthChecksUI__HealthChecks__0__Name
+          value: Web Client
+        - name: HealthChecksUI__HealthChecks__0__Uri
+          value: http://client-web-service/hc
+        - name: HealthChecksUI__HealthChecks__1__Name
+          value: Add Service
+        - name: HealthChecksUI__HealthChecks__1__Uri
+          value: http://add-service/hc
+        - name: HealthChecksUI__HealthChecks__2__Name
+          value: Subtract Service
+        - name: HealthChecksUI__HealthChecks__2__Uri
+          value: http://subtract-service/hc
+        - name: HealthChecksUI__HealthChecks__3__Name
+          value: Multiply Service
+        - name: HealthChecksUI__HealthChecks__3__Uri
+          value: http://multiply-service/hc
+        - name: HealthChecksUI__HealthChecks__4__Name
+          value: Divide Service
+        - name: HealthChecksUI__HealthChecks__4__Uri
+          value: http://divide-service/hc
 ---
 --- # Add Service
 ---
@@ -248,10 +315,12 @@ spec:
         ports:
           - containerPort: 80
         env:
+        - name: TARGET
+          value: add
         - name: BROKER_TYPE
-          value: KAFKA
+          value: RABBITMQ
         - name: EVENT_BUS_RETRY_COUNT
-          value: 5
+          value: "5"
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: kafka-service:9092
         - name: KAFKA_GROUP_ID
@@ -303,10 +372,12 @@ spec:
         ports:
           - containerPort: 80
         env:
-       - name: BROKER_TYPE
-          value: KAFKA
+        - name: TARGET
+          value: subtract
+        - name: BROKER_TYPE
+          value: RABBITMQ
         - name: EVENT_BUS_RETRY_COUNT
-          value: 5
+          value: "5"
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: kafka-service:9092
         - name: KAFKA_GROUP_ID
@@ -358,10 +429,12 @@ spec:
         ports:
           - containerPort: 80
         env:
-       - name: BROKER_TYPE
-          value: KAFKA
+        - name: TARGET
+          value: multiply
+        - name: BROKER_TYPE
+          value: RABBITMQ
         - name: EVENT_BUS_RETRY_COUNT
-          value: 5
+          value: "5"
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: kafka-service:9092
         - name: KAFKA_GROUP_ID
@@ -413,10 +486,12 @@ spec:
         ports:
           - containerPort: 80
         env:
+        - name: TARGET
+          value: divide
         - name: BROKER_TYPE
-          value: KAFKA
+          value: RABBITMQ
         - name: EVENT_BUS_RETRY_COUNT
-          value: 5
+          value: "5"
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: kafka-service:9092
         - name: KAFKA_GROUP_ID
