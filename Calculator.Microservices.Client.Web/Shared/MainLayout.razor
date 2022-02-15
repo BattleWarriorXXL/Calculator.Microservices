@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject IConfiguration Configuration
 
 <PageTitle>Calculator.Microservices.Client.Web</PageTitle>
 
@@ -9,7 +10,7 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <a href="@Configuration["HEALTH_CHECK_URI"]" target="_blank">Health check</a>
         </div>
 
         <article class="content px-4">

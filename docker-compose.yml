@@ -52,7 +52,9 @@ services:
                        kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic add && \
                        kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic subtract && \
                        kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic multiply && \
-                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic divide'"
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic divide && \
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic pow && \
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic sqrt'"
     environment:
       KAFKA_BROKER_ID: ignored
       KAFKA_ZOOKEEPER_CONNECT: ignored
@@ -83,6 +85,7 @@ services:
     depends_on:
       - kafka.setup
     environment:
+      HEALTH_CHECK_URI: http://localhost:3001
       TARGET: result
       BROKER_TYPE: KAFKA
       RABBITMQ_HOSTNAME: rabbitmq
@@ -100,21 +103,24 @@ services:
       - rabbitmq_network
       - kafka_network
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
       - HealthChecksUI__HealthChecks__0__Name=Web Client
       - HealthChecksUI__HealthChecks__0__Uri=http://client.web/hc
       - HealthChecksUI__HealthChecks__1__Name=Add Service
-      - HealthChecksUI__HealthChecks__1__Uri=http://add/hc
+      - HealthChecksUI__HealthChecks__1__Uri=http://operations.add/hc
       - HealthChecksUI__HealthChecks__2__Name=Subtract Service
-      - HealthChecksUI__HealthChecks__2__Uri=http://subtract/hc
+      - HealthChecksUI__HealthChecks__2__Uri=http://operations.subtract/hc
       - HealthChecksUI__HealthChecks__3__Name=Multiply Service
-      - HealthChecksUI__HealthChecks__3__Uri=http://multiply/hc
+      - HealthChecksUI__HealthChecks__3__Uri=http://operations.multiply/hc
       - HealthChecksUI__HealthChecks__4__Name=Divide Service
-      - HealthChecksUI__HealthChecks__4__Uri=http://divide/hc
+      - HealthChecksUI__HealthChecks__4__Uri=http://operations.divide/hc
+      - HealthChecksUI__HealthChecks__5__Name=Pow Service
+      - HealthChecksUI__HealthChecks__5__Uri=http://operations.pow/hc
+      - HealthChecksUI__HealthChecks__6__Name=Sqrt Service
+      - HealthChecksUI__HealthChecks__6__Uri=http://operations.sqrt/hc
 
-  add:
+  operations.add:
     image: battlewarriorxxl/calculator:add
-    container_name: add
+    container_name: operations.add
     build:
       dockerfile: Calculator.Microservices.Operations.Add/Dockerfile
     networks:
@@ -129,9 +135,9 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
 
-  subtract:
+  operations.subtract:
     image: battlewarriorxxl/calculator:subtract
-    container_name: subtract
+    container_name: operations.subtract
     build:
       dockerfile: Calculator.Microservices.Operations.Subtract/Dockerfile
     networks:
@@ -146,9 +152,9 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
 
-  multiply:
+  operations.multiply:
     image: battlewarriorxxl/calculator:multiply
-    container_name: multiply
+    container_name: operations.multiply
     build:
       dockerfile: Calculator.Microservices.Operations.Multiply/Dockerfile
     networks:
@@ -163,9 +169,9 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
 
-  divide:
+  operations.divide:
     image: battlewarriorxxl/calculator:divide
-    container_name: divide
+    container_name: operations.divide
     build:
       dockerfile: Calculator.Microservices.Operations.Divide/Dockerfile
     networks:
@@ -175,6 +181,40 @@ services:
       - rabbitmq
     environment:
       TARGET: divide
+      BROKER_TYPE: KAFKA
+      RABBITMQ_HOSTNAME: rabbitmq
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EVENT_BUS_RETRY_COUNT: 5
+
+  operations.pow:
+    image: battlewarriorxxl/calculator:pow
+    container_name: operations.pow
+    build:
+      dockerfile: Calculator.Microservices.Operations.Pow/Dockerfile
+    networks:
+      - rabbitmq_network
+      - kafka_network
+    depends_on:
+      - rabbitmq
+    environment:
+      TARGET: pow
+      BROKER_TYPE: KAFKA
+      RABBITMQ_HOSTNAME: rabbitmq
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EVENT_BUS_RETRY_COUNT: 5
+
+  operations.sqrt:
+    image: battlewarriorxxl/calculator:sqrt
+    container_name: operations.sqrt
+    build:
+      dockerfile: Calculator.Microservices.Operations.Sqrt/Dockerfile
+    networks:
+      - rabbitmq_network
+      - kafka_network
+    depends_on:
+      - rabbitmq
+    environment:
+      TARGET: sqrt
       BROKER_TYPE: KAFKA
       RABBITMQ_HOSTNAME: rabbitmq
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092

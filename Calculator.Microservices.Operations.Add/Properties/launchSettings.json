@@ -5,16 +5,9 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:5159",
+      "applicationUrl": "http://localhost:3002",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "EVENT_BUS_RETRY_COUNT": "5",
-        "BROKER_TYPE": "RABBITMQ",
-
-        "KAFKA_BOOTSTRAP_SERVERS": "localhost:19092",
-        "KAFKA_GROUP_ID": "custom-group",
-
-        "RABBITMQ_HOSTNAME": "localhost"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }
