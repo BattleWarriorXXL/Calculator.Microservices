@@ -4,14 +4,13 @@ using Calculator.Microservices.Shared.IntegrationEvents.Events;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Confluent.Kafka;
 using Calculator.Microservices.Shared.Library.HealthCheck;
-using Calculator.Microservices.Shared.Library.HealthCheck.SelfHealthCheck;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services.AddHealthChecks()
-                .AddSelfCheck("add service")
-                //.AddCheck("self", () => HealthCheckResult.Healthy())
+                .AddCheck("self", () => HealthCheckResult.Healthy())
                 .AddRabbitMQ(name: "rabbitmq_add_service", rabbitConnectionString: $"amqp://{configuration["RABBITMQ_HOSTNAME"]}")
                 .AddKafka(
                     new ProducerConfig { BootstrapServers = configuration["KAFKA_BOOTSTRAP_SERVERS"] },
