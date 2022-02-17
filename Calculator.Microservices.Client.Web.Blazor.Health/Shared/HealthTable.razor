@@ -1,0 +1,69 @@
+﻿@using Calculator.Microservices.Shared.Library.HealthCheck
+@using Microsoft.Extensions.Diagnostics.HealthChecks
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Total Duration</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var report in Reports)
+        {
+            <tr @onclick="Expand">
+                <td>@report.Value.Name</td>
+                <td class="@GetHealthStatus(report.Value.Status)">@report.Value.Status</td>
+                <td>@report.Value.TotalDuration</td>
+            </tr>
+            <tr id="@report.Key">
+                <td colspan="3">
+                    <table class="table">
+                        <thead>
+                            <tr class="table-light">
+                                <th>Name</th>
+                                <th>Health</th>
+                                <th>Description</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var entry in report.Value.Entries)
+                            {
+                                <tr>
+                                    <td>@entry.Key</td>
+                                    <td class="@GetHealthStatus(entry.Value.Status)">@entry.Value.Status</td>
+                                    <td>@entry.Value.Description</td>
+                                    <td>@entry.Value.Duration</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    [Parameter]
+    public IReadOnlyDictionary<string, DomainUIHealthReport> Reports { get; set; }
+
+    private string GetHealthStatus(HealthStatus status)
+    {
+        return status switch
+        {
+            HealthStatus.Healthy => "table-success",
+            HealthStatus.Degraded => "table-warning",
+            HealthStatus.Unhealthy => "table-danger",
+            _ => "table-dark"
+        };
+    }
+
+    private void Expand()
+    {
+        
+    }
+}
