@@ -27,11 +27,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Sh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Client.Web.Health", "Calculator.Microservices.Client.Web.Health\Calculator.Microservices.Client.Web.Health.csproj", "{C5C329A1-548C-46C4-81FA-7254A56521B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator.Microservices.Operations.ReversePolishNotation", "Calculator.Microservices.Operations.ReversePolishNotation\Calculator.Microservices.Operations.ReversePolishNotation.csproj", "{B2F7357D-578C-45C0-AD90-B7DD64F32BFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Operations.ReversePolishNotation", "Calculator.Microservices.Operations.ReversePolishNotation\Calculator.Microservices.Operations.ReversePolishNotation.csproj", "{B2F7357D-578C-45C0-AD90-B7DD64F32BFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator.Microservices.Operations.Sqrt", "Calculator.Microservices.Operations.Sqrt\Calculator.Microservices.Operations.Sqrt.csproj", "{59C987F3-6753-40BB-B500-E947E4B67845}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Operations.Sqrt", "Calculator.Microservices.Operations.Sqrt\Calculator.Microservices.Operations.Sqrt.csproj", "{59C987F3-6753-40BB-B500-E947E4B67845}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator.Microservices.Operations.Pow", "Calculator.Microservices.Operations.Pow\Calculator.Microservices.Operations.Pow.csproj", "{73C2A46C-2E99-46C8-AF00-D2F24EDC2D64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Operations.Pow", "Calculator.Microservices.Operations.Pow\Calculator.Microservices.Operations.Pow.csproj", "{73C2A46C-2E99-46C8-AF00-D2F24EDC2D64}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Client.Web.Blazor.Health", "Calculator.Microservices.Client.Web.Blazor.Health\Calculator.Microservices.Client.Web.Blazor.Health.csproj", "{66012DC2-E8E1-4BF8-95BC-9935272C37C1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.Microservices.Shared.Library.HealthCheck", "Calculator.Microservices.Shared.Library.HealthCheck\Calculator.Microservices.Shared.Library.HealthCheck.csproj", "{75C176E4-193B-46A6-91E4-DB33532692A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,6 +103,14 @@ Global
 		{73C2A46C-2E99-46C8-AF00-D2F24EDC2D64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73C2A46C-2E99-46C8-AF00-D2F24EDC2D64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73C2A46C-2E99-46C8-AF00-D2F24EDC2D64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66012DC2-E8E1-4BF8-95BC-9935272C37C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66012DC2-E8E1-4BF8-95BC-9935272C37C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66012DC2-E8E1-4BF8-95BC-9935272C37C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66012DC2-E8E1-4BF8-95BC-9935272C37C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75C176E4-193B-46A6-91E4-DB33532692A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75C176E4-193B-46A6-91E4-DB33532692A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75C176E4-193B-46A6-91E4-DB33532692A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75C176E4-193B-46A6-91E4-DB33532692A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

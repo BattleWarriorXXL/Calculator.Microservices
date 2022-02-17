@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "Calculator.Microservices.Client.Web.Blazor.Health": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:4000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

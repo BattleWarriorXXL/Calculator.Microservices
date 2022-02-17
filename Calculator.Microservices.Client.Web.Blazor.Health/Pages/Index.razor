@@ -1,0 +1,38 @@
+﻿@page "/"
+@using Calculator.Microservices.Client.Web.Blazor.Health.Services
+@using Calculator.Microservices.Shared.Library.HealthCheck
+@inject IHealthCheckReportService HealthCheckReportService
+@implements IDisposable
+
+<PageTitle>Health</PageTitle>
+
+<HealthTable Reports="Reports" />
+
+@code {
+    private Dictionary<string, DomainUIHealthReport> Reports { get; set; } = new();
+
+    private void OnReportGet(DomainUIHealthReport report)
+    {
+        if (Reports.ContainsKey(report.Name))
+        {
+            Reports[report.Name] = report;
+        }
+        else
+        {
+            Reports.Add(report.Name, report);
+        }
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        HealthCheckReportService.Subscribe(OnReportGet);
+    }
+
+    public void Dispose()
+    {
+        HealthCheckReportService.Unsubscribe(OnReportGet);
+    }
+}
