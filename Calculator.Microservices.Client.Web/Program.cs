@@ -2,21 +2,19 @@ using Calculator.Microservices.Client.Web.IntegrationEvents.EventHandling;
 using Calculator.Microservices.Client.Web.Services;
 using Calculator.Microservices.Shared.Extensions;
 using Calculator.Microservices.Shared.IntegrationEvents.Events;
-using Confluent.Kafka;
-using HealthChecks.UI.Client;
+using Calculator.Microservices.Shared.Library.HealthCheck;
+using Calculator.Microservices.Shared.Library.HealthCheck.KafkaHealthCheck;
+using Calculator.Microservices.Shared.Library.HealthCheck.RabbitMQHealthCheck;
+using Calculator.Microservices.Shared.Library.HealthCheck.SelfHealthCheck;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services.AddHealthChecks()
-                .AddCheck("self", () => HealthCheckResult.Healthy())
-                .AddRabbitMQ(name: "rabbitmq_client_web", rabbitConnectionString: $"amqp://{configuration["RABBITMQ_HOSTNAME"]}")
-                .AddKafka(
-                    new ProducerConfig { BootstrapServers = configuration["KAFKA_BOOTSTRAP_SERVERS"] },
-                    name: "kafka_client_web"
-                 );
+                .AddSelfCheck()
+                .AddRabbitMQCheck(configuration["RABBITMQ_HOSTNAME"])
+                .AddKafkaCheck(configuration["KAFKA_BOOTSTRAP_SERVERS"]);
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
@@ -43,7 +41,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
     {
         Predicate = _ => true,
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        ResponseWriter = HealthResponseWriter.WriteHealthCheckResponse
     });
     endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
     {

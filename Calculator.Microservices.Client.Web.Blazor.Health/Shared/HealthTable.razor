@@ -12,7 +12,7 @@
     <tbody>
         @foreach (var report in Reports)
         {
-            <tr @onclick="Expand">
+            <tr>
                 <td>@report.Value.Name</td>
                 <td class="@GetHealthStatus(report.Value.Status)">@report.Value.Status</td>
                 <td>@report.Value.TotalDuration</td>
@@ -49,7 +49,7 @@
 
 @code {
     [Parameter]
-    public IReadOnlyDictionary<string, DomainUIHealthReport> Reports { get; set; }
+    public IReadOnlyDictionary<string, UIHealthReport> Reports { get; set; }
 
     private string GetHealthStatus(HealthStatus status)
     {
@@ -60,10 +60,5 @@
             HealthStatus.Unhealthy => "table-danger",
             _ => "table-dark"
         };
-    }
-
-    private void Expand()
-    {
-        
     }
 }

@@ -5,13 +5,12 @@ namespace Calculator.Microservices.Shared.Library.HealthCheck.SelfHealthCheck
 {
     public static class SelfHealthCheckExtension
     {
-        private const string PREFIX_NAME = "self";
-        public static IHealthChecksBuilder AddSelfCheck(this IHealthChecksBuilder builder, string name,
-                                                        HealthStatus? failureStatus = default, IEnumerable<string>? tags = default,
-                                                        TimeSpan? timeout = default)
+        private const string NAME = "self";
+        public static IHealthChecksBuilder AddSelfCheck(this IHealthChecksBuilder builder, HealthStatus? failureStatus = default,
+                                                        IEnumerable<string>? tags = default, TimeSpan? timeout = default)
         {
             return builder.Add(new HealthCheckRegistration(
-                $"{PREFIX_NAME}_{name}",
+                NAME,
                 new SelfHealthCheck(),
                 failureStatus,
                 tags,

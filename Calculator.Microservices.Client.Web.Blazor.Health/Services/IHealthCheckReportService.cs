@@ -5,7 +5,7 @@ namespace Calculator.Microservices.Client.Web.Blazor.Health.Services
     public interface IHealthCheckReportService
     {
         Task CheckAsync(CancellationToken cancellationToken);
-        void Subscribe(Action<DomainUIHealthReport> onCheckHealth);
-        void Unsubscribe(Action<DomainUIHealthReport> onCheckHealth);
+        void Subscribe(Action<UIHealthReport> onCheckHealth);
+        void Unsubscribe(Action<UIHealthReport> onCheckHealth);
     }
 }

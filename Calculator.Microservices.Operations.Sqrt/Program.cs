@@ -1,21 +1,19 @@
 using Calculator.Microservices.Shared.Extensions;
 using Calculator.Microservices.Shared.IntegrationEvents.Events;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using HealthChecks.UI.Client;
-using Confluent.Kafka;
 using Calculator.Microservices.Operations.Sqrt.IntegrationEvents.EventHandling;
+using Calculator.Microservices.Shared.Library.HealthCheck;
+using Calculator.Microservices.Shared.Library.HealthCheck.SelfHealthCheck;
+using Calculator.Microservices.Shared.Library.HealthCheck.RabbitMQHealthCheck;
+using Calculator.Microservices.Shared.Library.HealthCheck.KafkaHealthCheck;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services.AddHealthChecks()
-                .AddCheck("self", () => HealthCheckResult.Healthy())
-                .AddRabbitMQ(name: "rabbitmq_sqrt_service", rabbitConnectionString: $"amqp://{configuration["RABBITMQ_HOSTNAME"]}")
-                .AddKafka(
-                    new ProducerConfig { BootstrapServers = configuration["KAFKA_BOOTSTRAP_SERVERS"] },
-                    name: "kafka_sqrt_service"
-                 );
+                .AddSelfCheck()
+                .AddRabbitMQCheck(configuration["RABBITMQ_HOSTNAME"])
+                .AddKafkaCheck(configuration["KAFKA_BOOTSTRAP_SERVERS"]);
 
 builder.Services.AddEventBus(configuration);
 builder.Services.AddTransient<SqrtIntegrationEventHandler>();
@@ -28,7 +26,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
     {
         Predicate = _ => true,
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        ResponseWriter = HealthResponseWriter.WriteHealthCheckResponse
     });
     endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
     {

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Calculator.Microservices.Shared.Library.HealthCheck
 {
@@ -10,7 +9,6 @@ namespace Calculator.Microservices.Shared.Library.HealthCheck
         const string DEFAULT_CONTENT_TYPE = "application/json";
 
         private static byte[] emptyResponse = new byte[] { (byte)'{', (byte)'}' };
-        private static Lazy<JsonSerializerOptions> options = new(() => CreateJsonOptions());
 
         public static async Task WriteHealthCheckResponse(HttpContext httpContext, HealthReport report)
         {
@@ -18,8 +16,7 @@ namespace Calculator.Microservices.Shared.Library.HealthCheck
             {
                 httpContext.Response.ContentType = DEFAULT_CONTENT_TYPE;
 
-                var uiReport = UIHealthReport
-                    .CreateFrom(report);
+                var uiReport = UIHealthReport.CreateFrom(report);
 
                 using var responseStream = new MemoryStream();
 
@@ -30,19 +27,6 @@ namespace Calculator.Microservices.Shared.Library.HealthCheck
             {
                 await httpContext.Response.Body.WriteAsync(emptyResponse);
             }
-        }
-
-        private static JsonSerializerOptions CreateJsonOptions()
-        {
-            var options = new JsonSerializerOptions()
-            {
-                AllowTrailingCommas = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            options.Converters.Add(new JsonStringEnumConverter());
-
-            return options;
         }
     }
 }

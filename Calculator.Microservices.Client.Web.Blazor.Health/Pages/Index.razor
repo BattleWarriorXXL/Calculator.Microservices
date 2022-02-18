@@ -9,9 +9,9 @@
 <HealthTable Reports="Reports" />
 
 @code {
-    private Dictionary<string, DomainUIHealthReport> Reports { get; set; } = new();
+    private Dictionary<string, UIHealthReport> Reports { get; set; } = new();
 
-    private void OnReportGet(DomainUIHealthReport report)
+    private void OnReportGet(UIHealthReport report)
     {
         if (Reports.ContainsKey(report.Name))
         {

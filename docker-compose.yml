@@ -87,7 +87,7 @@ services:
     environment:
       HEALTH_CHECK_URI: http://localhost:3001
       TARGET: result
-      BROKER_TYPE: KAFKA
+      BROKER_TYPE: RABBITMQ
       RABBITMQ_HOSTNAME: rabbitmq
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
@@ -130,7 +130,7 @@ services:
       - rabbitmq
     environment:
       TARGET: add
-      BROKER_TYPE: KAFKA
+      BROKER_TYPE: RABBITMQ
       RABBITMQ_HOSTNAME: rabbitmq
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
@@ -147,7 +147,7 @@ services:
       - rabbitmq
     environment:
       TARGET: subtract
-      BROKER_TYPE: KAFKA
+      BROKER_TYPE: RABBITMQ
       RABBITMQ_HOSTNAME: rabbitmq
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
@@ -164,7 +164,7 @@ services:
       - rabbitmq
     environment:
       TARGET: multiply
-      BROKER_TYPE: KAFKA
+      BROKER_TYPE: RABBITMQ
       RABBITMQ_HOSTNAME: rabbitmq
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
@@ -181,7 +181,7 @@ services:
       - rabbitmq
     environment:
       TARGET: divide
-      BROKER_TYPE: KAFKA
+      BROKER_TYPE: RABBITMQ
       RABBITMQ_HOSTNAME: rabbitmq
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
@@ -198,7 +198,7 @@ services:
       - rabbitmq
     environment:
       TARGET: pow
-      BROKER_TYPE: KAFKA
+      BROKER_TYPE: RABBITMQ
       RABBITMQ_HOSTNAME: rabbitmq
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
@@ -215,7 +215,7 @@ services:
       - rabbitmq
     environment:
       TARGET: sqrt
-      BROKER_TYPE: KAFKA
+      BROKER_TYPE: RABBITMQ
       RABBITMQ_HOSTNAME: rabbitmq
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5

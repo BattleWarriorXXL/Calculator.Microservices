@@ -11,7 +11,7 @@ namespace Calculator.Microservices.Client.Web.Blazor.Health.Services
         private readonly Settings _settings;
         private readonly ILogger<HealthCheckReportService> _logger;
 
-        private event Action<DomainUIHealthReport>? Notify;
+        private event Action<UIHealthReport>? Notify;
 
         public HealthCheckReportService(IHttpClientFactory httpClientFactory,
                                         IOptions<Settings> settings,
@@ -35,8 +35,7 @@ namespace Calculator.Microservices.Client.Web.Blazor.Health.Services
                 }
 
                 var healthCheckReport = await GetHealthReportAsync(healthCheckSetting);
-                var domainHealthCheckReport = DomainUIHealthReport.CreateFrom(healthCheckReport);
-                Notify?.Invoke(domainHealthCheckReport);
+                Notify?.Invoke(healthCheckReport);
             }
 
             _logger.LogInformation("HealthReportService has completed.");
@@ -47,22 +46,26 @@ namespace Calculator.Microservices.Client.Web.Blazor.Health.Services
             try
             {
                 var response = await _httpClient.GetAsync(setting.Uri);
+                var uiHealthReport = await response.As<UIHealthReport>();
 
-                return await response.As<UIHealthReport>();
+                uiHealthReport.Name = setting.Name;
+                uiHealthReport.Uri = setting.Uri;
+ 
+                return uiHealthReport;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"GetHealthReport threw an exception when trying to get report from {setting.Uri} configured with name {setting.Name}.");
-                return UIHealthReport.CreateFrom(ex);
+                return UIHealthReport.CreateFrom(ex, setting.Name, setting.Uri);
             }
         }
 
-        public void Subscribe(Action<DomainUIHealthReport> onCheckHealth)
+        public void Subscribe(Action<UIHealthReport> onCheckHealth)
         {
             Notify += onCheckHealth;
         }
 
-        public void Unsubscribe(Action<DomainUIHealthReport> onCheckHealth)
+        public void Unsubscribe(Action<UIHealthReport> onCheckHealth)
         {
             Notify -= onCheckHealth;
         }

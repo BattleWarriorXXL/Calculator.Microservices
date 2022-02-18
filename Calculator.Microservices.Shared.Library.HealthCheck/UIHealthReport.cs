@@ -4,6 +4,8 @@ namespace Calculator.Microservices.Shared.Library.HealthCheck
 {
     public class UIHealthReport
     {
+        public string Name { get; set; }
+        public string Uri { get; set; }
         public HealthStatus Status { get; set; }
         public TimeSpan TotalDuration { get; set; }
         public Dictionary<string, UIHealthReportEntry> Entries { get; }
@@ -46,10 +48,13 @@ namespace Calculator.Microservices.Shared.Library.HealthCheck
 
             return uiReport;
         }
-        public static UIHealthReport CreateFrom(Exception exception, string entryName = "Endpoint")
+
+        public static UIHealthReport CreateFrom(Exception exception, string name, string uri, string entryName = "Endpoint")
         {
             var uiReport = new UIHealthReport(new Dictionary<string, UIHealthReportEntry>(), TimeSpan.FromSeconds(0))
             {
+                Name = name,
+                Uri = uri,
                 Status = HealthStatus.Unhealthy,
             };
 
@@ -63,7 +68,6 @@ namespace Calculator.Microservices.Shared.Library.HealthCheck
 
             return uiReport;
         }
-
     }
 
     public class UIHealthReportEntry
