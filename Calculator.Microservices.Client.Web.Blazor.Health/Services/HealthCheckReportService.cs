@@ -26,7 +26,7 @@ namespace Calculator.Microservices.Client.Web.Blazor.Health.Services
         {
             var healthChecks = _settings.HealthChecks;
 
-            foreach (var healthCheckSetting in healthChecks)
+            foreach (var healthCheckSetting in healthChecks.Values)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -41,7 +41,7 @@ namespace Calculator.Microservices.Client.Web.Blazor.Health.Services
             _logger.LogInformation("HealthReportService has completed.");
         }
 
-        public async Task<UIHealthReport> GetHealthReportAsync(HealthCheckSetting setting)
+        private async Task<UIHealthReport> GetHealthReportAsync(HealthCheckSetting setting)
         {
             try
             {

@@ -10,9 +10,15 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 
 builder.Services.Configure<Settings>(configuration.GetSection("HealthCheck"));
+builder.Services.Configure<KubernetesDiscoverySettings>(configuration.GetSection("KubernetesHealthCheck"));
+builder.Services.Configure<KubernetesHealthCheckSettings>(configuration.GetSection("KubernetesHealthCheck"));
 
 builder.Services.AddHostedService<HealthCheckHostedService>();
+builder.Services.AddHostedService<KubernetesDiscoveryHostedService>();
+builder.Services.AddHostedService<KubernetesHealthCheckHostedService>();
+
 builder.Services.AddSingleton<IHealthCheckReportService, HealthCheckReportService>();
+builder.Services.AddSingleton<IKubernetesHealthCheckReportService, KubernetesHealthCheckReportService>();
 
 var app = builder.Build();
 
@@ -21,7 +27,6 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
 }
-
 
 app.UseStaticFiles();
 

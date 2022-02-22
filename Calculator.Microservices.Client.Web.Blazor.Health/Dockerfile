@@ -5,11 +5,6 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
 COPY ["Calculator.Microservices.Client.Web.Blazor.Health/Calculator.Microservices.Client.Web.Blazor.Health.csproj", "Calculator.Microservices.Client.Web.Blazor.Health/"]
-COPY ["Calculator.Microservices.Shared.Kafka/Calculator.Microservices.Shared.Kafka.csproj", "Calculator.Microservices.Shared.Kafka/"]
-COPY ["Calculator.Microservices.Shared.RabbitMQ/Calculator.Microservices.Shared.RabbitMQ.csproj", "Calculator.Microservices.Shared.RabbitMQ/"]
-COPY ["Calculator.Microservices.Shared.Extensions/Calculator.Microservices.Shared.Extensions.csproj", "Calculator.Microservices.Shared.Extensions/"]
-COPY ["Calculator.Microservices.Shared.Library/Calculator.Microservices.Shared.Library.csproj", "Calculator.Microservices.Shared.Library/"]
-COPY ["Calculator.Microservices.Shared.IntegrationEvents/Calculator.Microservices.Shared.IntegrationEvents.csproj", "Calculator.Microservices.Shared.IntegrationEvents/"]
 
 RUN dotnet restore "Calculator.Microservices.Client.Web.Blazor.Health/Calculator.Microservices.Client.Web.Blazor.Health.csproj"
 

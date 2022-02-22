@@ -1,0 +1,37 @@
+﻿@page "/kube"
+@using Calculator.Microservices.Client.Web.Blazor.Health.Services
+@using Calculator.Microservices.Shared.Library.HealthCheck
+@inject IKubernetesHealthCheckReportService KubernetesHealthCheckReportService
+@implements IDisposable
+
+<KubeHealthTable Reports=Reports />
+
+@code {
+    private Dictionary<string, UIKubernetesHealthReport> Reports = new();
+
+    private void OnReportGet(UIKubernetesHealthReport report)
+    {
+        if (Reports.ContainsKey(report.Name))
+        {
+            Reports[report.Name] = report;
+        }
+        else
+        {
+            Reports.Add(report.Name, report);
+        }
+
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        KubernetesHealthCheckReportService.Subscribe(OnReportGet);
+    }
+
+    public void Dispose()
+    {
+        KubernetesHealthCheckReportService.Unsubscribe(OnReportGet);
+    }
+}

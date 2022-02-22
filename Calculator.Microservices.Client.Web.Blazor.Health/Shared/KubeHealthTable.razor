@@ -1,5 +1,4 @@
 ﻿@using Calculator.Microservices.Shared.Library.HealthCheck
-@using Microsoft.Extensions.Diagnostics.HealthChecks
 
 <div id="accordion">
     @foreach (var report in Reports)
@@ -7,7 +6,7 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <button class="btn @GetStatusColor(report.Value.Status) w-100 d-flex justify-content-between"  @onclick="() => Toggle(report.Key)">
+                    <button class="btn @GetStatusColor(report.Value.Status) w-100 d-flex justify-content-between" @onclick="() => Toggle(report.Key)">
                         <span>
                             @report.Key
                         </span>
@@ -23,20 +22,24 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Health</th>
-                                <th>Description</th>
-                                <th>Duration</th>
+                                <td style="width: 70%">
+                                    Name
+                                </td>
+                                <td>
+                                    Status
+                                </td>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var entry in report.Value.Entries)
+                            @foreach (var item in report.Value.Entries)
                             {
-                                <tr class="@GetStatusColor(report.Value.Status, true)">
-                                    <td>@entry.Key</td>
-                                    <td>@entry.Value.Status</td>
-                                    <td>@entry.Value.Description</td>
-                                    <td>@entry.Value.Duration</td>
+                                <tr class="@GetStatusColor(item.PodStatus)">
+                                    <td>
+                                        @item.Name
+                                    </td>
+                                    <td>
+                                        @item.PodStatus
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -49,7 +52,7 @@
 
 @code {
     [Parameter]
-    public IReadOnlyDictionary<string, UIHealthReport> Reports { get; set; }
+    public IReadOnlyDictionary<string, UIKubernetesHealthReport> Reports { get; set; }
 
     private Dictionary<string, string> Toggles { get; set; } = new();
 
@@ -71,14 +74,25 @@
         }
     }
 
-    private string GetStatusColor(HealthStatus status, bool secondary = false)
+    private string GetStatusColor(KubernetesStatus status)
     {
         return status switch
         {
-            HealthStatus.Unhealthy => "btn-danger",
-            HealthStatus.Degraded => "btn-warning",
-            HealthStatus.Healthy => secondary ? string.Empty : "btn-success",
+            KubernetesStatus.Failed => "btn-danger",
+            KubernetesStatus.Pending => "btn-warning",
+            KubernetesStatus.Running => "btn-success",
             _ => string.Empty
+        };
+    }
+
+    private string GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "Failed" => "btn-danger",
+            "Unknown" => "btn-danger",
+            "Running" => string.Empty,
+            _ => "btn-warning"
         };
     }
 }

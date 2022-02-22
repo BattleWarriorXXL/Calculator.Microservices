@@ -3,7 +3,7 @@
     public class Settings
     {
         public int EvaluationTimeInSeconds { get; set; } = 10;
-        public List<HealthCheckSetting> HealthChecks { get; set; } = new List<HealthCheckSetting>();
+        public Dictionary<string, HealthCheckSetting> HealthChecks { get; set; } = new();
     }
 
     public class HealthCheckSetting

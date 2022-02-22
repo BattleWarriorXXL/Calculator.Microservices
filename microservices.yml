@@ -1,9 +1,19 @@
 ---
---- # zookeeper
+--- # Namespace
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: calculator
+  labels:
+    name: calculator
+---
+--- # Zookeeper
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: calculator
   labels:
     app: zookeeper-service
   name: zookeeper-service
@@ -20,6 +30,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: calculator
   labels:
     app: zookeeper
   name: zookeeper
@@ -46,11 +57,12 @@ spec:
         - name: ZOOKEEPER_TICK_TIME
           value: "2000"
 ---
---- # kafka
+--- # Kafka
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: calculator
   labels:
     app: kafka-service
   name: kafka-service
@@ -67,6 +79,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: calculator
   labels:
     app: kafka
   name: kafka
@@ -109,11 +122,12 @@ spec:
               - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
                 value: "true"
 ---
---- # rabbitmq
+--- # RabbitMQ
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: calculator
   labels:
     app: rabbitmq-service
   name: rabbitmq-service
@@ -130,6 +144,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: calculator
   labels:
     app: rabbitmq
   name: rabbitmq
@@ -154,6 +169,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: calculator
   labels:
     app: client-web-service
   name: client-web-service
@@ -169,6 +185,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: calculator
   name: client-web
   labels:
     app: client-web
@@ -211,6 +228,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: calculator
   labels:
     app: client-web-health-service
   name: client-web-health-service
@@ -226,6 +244,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: calculator
   name: client-web-health
   labels:
     app: client-web-health
@@ -271,11 +290,81 @@ spec:
         - name: HealthChecksUI__HealthChecks__4__Uri
           value: http://divide-service/hc
 ---
+--- # Web Blazor Client Health
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: calculator
+  labels:
+    app: client-web-blazor-health-service
+  name: client-web-blazor-health-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: client-web-blazor-health-port
+    port: 80
+    targetPort: 80
+  selector:
+    app: client-web-blazor-health
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: calculator
+  name: client-web-blazor-health
+  labels:
+    app: client-web-blazor-health
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client-web-blazor-health
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: client-web-blazor-health
+    spec:
+      containers:
+      - name: client-web-blazor-health
+        image: battlewarriorxxl/calculator:client_web_blazor_health
+        ports:
+          - containerPort: 80
+        env:
+        - name: HealthCheck__EvaluationTimeInSeconds
+          value: "5"
+        - name: HealthCheck__HealthChecks__0__Name
+          value: Web Client
+        - name: HealthCheck__HealthChecks__0__Uri
+          value: http://client-web-service/hc
+        - name: HealthCheck__HealthChecks__1__Name
+          value: Add Service
+        - name: HealthCheck__HealthChecks__1__Uri
+          value: http://add-service/hc
+        - name: HealthCheck__HealthChecks__2__Name
+          value: Subtract Service
+        - name: HealthCheck__HealthChecks__2__Uri
+          value: http://subtract-service/hc
+        - name: HealthCheck__HealthChecks__3__Name
+          value: Multiply Service
+        - name: HealthCheck__HealthChecks__3__Uri
+          value: http://multiply-service/hc
+        - name: HealthCheck__HealthChecks__4__Name
+          value: Divide Service
+        - name: HealthCheck__HealthChecks__4__Uri
+          value: http://divide-service/hc
+---
 --- # Add Service
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: calculator
   labels:
     app: add-service
   name: add-service
@@ -291,6 +380,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: calculator
   name: add
   labels:
     app: add
@@ -333,6 +423,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: calculator
   labels:
     app: subtract-service
   name: subtract-service
@@ -348,6 +439,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: calculator
   name: subtract
   labels:
     app: subtract
@@ -390,6 +482,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: calculator
   labels:
     app: multiply-service
   name: multiply-service
@@ -405,6 +498,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: calculator
   name: multiply
   labels:
     app: multiply
@@ -447,6 +541,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: calculator
   labels:
     app: divide-service
   name: divide-service
@@ -462,6 +557,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: calculator
   name: divide
   labels:
     app: divide
@@ -488,6 +584,124 @@ spec:
         env:
         - name: TARGET
           value: divide
+        - name: BROKER_TYPE
+          value: RABBITMQ
+        - name: EVENT_BUS_RETRY_COUNT
+          value: "5"
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: kafka-service:9092
+        - name: KAFKA_GROUP_ID
+          value: custom-group
+        - name: RABBITMQ_HOSTNAME
+          value: rabbitmq-service
+---
+--- # Pow Service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: calculator
+  labels:
+    app: pow-service
+  name: pow-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: pow-port
+    port: 80
+    targetPort: 80
+  selector:
+    app: pow
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: calculator
+  name: pow
+  labels:
+    app: pow
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: pow
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: pow
+    spec:
+      containers:
+      - name: pow
+        image: battlewarriorxxl/calculator:pow
+        ports:
+          - containerPort: 80
+        env:
+        - name: TARGET
+          value: pow
+        - name: BROKER_TYPE
+          value: RABBITMQ
+        - name: EVENT_BUS_RETRY_COUNT
+          value: "5"
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: kafka-service:9092
+        - name: KAFKA_GROUP_ID
+          value: custom-group
+        - name: RABBITMQ_HOSTNAME
+          value: rabbitmq-service
+---
+--- # Sqrt Service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: calculator
+  labels:
+    app: sqrt-service
+  name: sqrt-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: sqrt-port
+    port: 80
+    targetPort: 80
+  selector:
+    app: sqrt
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: calculator
+  name: sqrt
+  labels:
+    app: sqrt
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: sqrt
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: sqrt
+    spec:
+      containers:
+      - name: sqrt
+        image: battlewarriorxxl/calculator:sqrt
+        ports:
+          - containerPort: 80
+        env:
+        - name: TARGET
+          value: sqrt
         - name: BROKER_TYPE
           value: RABBITMQ
         - name: EVENT_BUS_RETRY_COUNT

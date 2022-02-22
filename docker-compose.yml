@@ -118,6 +118,33 @@ services:
       - HealthChecksUI__HealthChecks__6__Name=Sqrt Service
       - HealthChecksUI__HealthChecks__6__Uri=http://operations.sqrt/hc
 
+  client.web.health.blazor:
+    image: battlewarriorxxl/calculator:client_web_blazor_health
+    container_name: client.web.blazor.health
+    build:
+      dockerfile: Calculator.Microservices.Client.Web.Blazor.Health/Dockerfile
+    ports:
+      - "4000:80"
+    networks:
+      - rabbitmq_network
+      - kafka_network
+    environment:
+      - HealthCheck__EvaluationTimeInSeconds=5
+      - HealthCheck__HealthChecks__0__Name=Web Client
+      - HealthCheck__HealthChecks__0__Uri=http://client.web/hc
+      - HealthCheck__HealthChecks__1__Name=Add Service
+      - HealthCheck__HealthChecks__1__Uri=http://operations.add/hc
+      - HealthCheck__HealthChecks__2__Name=Subtract Service
+      - HealthCheck__HealthChecks__2__Uri=http://operations.subtract/hc
+      - HealthCheck__HealthChecks__3__Name=Multiply Service
+      - HealthCheck__HealthChecks__3__Uri=http://operations.multiply/hc
+      - HealthCheck__HealthChecks__4__Name=Divide Service
+      - HealthCheck__HealthChecks__4__Uri=http://operations.divide/hc
+      - HealthCheck__HealthChecks__5__Name=Pow Service
+      - HealthCheck__HealthChecks__5__Uri=http://operations.pow/hc
+      - HealthCheck__HealthChecks__6__Name=Sqrt Service
+      - HealthCheck__HealthChecks__6__Uri=http://operations.sqrt/hc
+
   operations.add:
     image: battlewarriorxxl/calculator:add
     container_name: operations.add

@@ -3,32 +3,28 @@ using Microsoft.Extensions.Options;
 
 namespace Calculator.Microservices.Client.Web.Blazor.Health.Services
 {
-    public class HealthCheckHostedService : IHostedService
+    public class KubernetesHealthCheckHostedService : IHostedService
     {
+        private readonly IHostApplicationLifetime _hostLifetime;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IHostApplicationLifetime _lifetime;
-        private readonly Settings _settings;
-        private readonly ILogger<HealthCheckHostedService> _logger;
+        private readonly ILogger<KubernetesHealthCheckHostedService> _logger;
+        private readonly KubernetesHealthCheckSettings _settings;
 
         private Task? _executingTask;
-        private CancellationTokenSource _cancellationTokenSource;
 
-        public HealthCheckHostedService(IServiceProvider serviceProvider,
-                                        IHostApplicationLifetime lifetime,
-                                        IOptions<Settings> settings,
-                                        ILogger<HealthCheckHostedService> logger)
+        public KubernetesHealthCheckHostedService(IHostApplicationLifetime hostLifetime, IServiceProvider serviceProvider,
+                                                  ILogger<KubernetesHealthCheckHostedService> logger,
+                                                  IOptions<KubernetesHealthCheckSettings> settings)
         {
+            _hostLifetime = hostLifetime;
             _serviceProvider = serviceProvider;
-            _lifetime = lifetime;
-            _settings = settings.Value;
             _logger = logger;
-
-            _cancellationTokenSource = new CancellationTokenSource();
+            _settings = settings.Value;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _executingTask = ExecuteAsync(_cancellationTokenSource.Token);
+            _executingTask = ExecuteAsync(cancellationToken);
 
             if (_executingTask.IsCompleted)
             {
@@ -40,13 +36,12 @@ namespace Calculator.Microservices.Client.Web.Blazor.Health.Services
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            _cancellationTokenSource.Cancel();
             await Task.WhenAll(_executingTask!, Task.Delay(Timeout.Infinite, cancellationToken));
         }
 
         private Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            _lifetime.ApplicationStarted.Register(async () =>
+            _hostLifetime.ApplicationStarted.Register(async () =>
             {
                 try
                 {
@@ -54,7 +49,7 @@ namespace Calculator.Microservices.Client.Web.Blazor.Health.Services
                 }
                 catch (TaskCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
-                    _logger.LogInformation("HealthCheckHostedService stopped.");
+                    _logger.LogInformation("KubernetesHealthCheckHostedService stopped.");
                 }
             });
 
@@ -73,14 +68,14 @@ namespace Calculator.Microservices.Client.Web.Blazor.Health.Services
                 {
                     try
                     {
-                        var runner = scope.ServiceProvider.GetRequiredService<IHealthCheckReportService>();
+                        var runner = scope.ServiceProvider.GetRequiredService<IKubernetesHealthCheckReportService>();
                         await runner.CheckAsync(cancellationToken);
 
-                        _logger.LogInformation("HealthCheck collector HostedService executed successfully.");
+                        _logger.LogInformation("KubernetesHealthCheck collector HostedService executed successfully.");
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
-                        _logger.LogError(ex, "HealthCheck collector HostedService threw an error: {Error}", ex.Message);
+                        _logger.LogError(ex, "KubernetesHealthCheck collector HostedService threw an error: {Error}", ex.Message);
                     }
                 }
 
