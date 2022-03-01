@@ -1,0 +1,47 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Calculator.Microservices.Server.Grpc.Api";
+
+package Calculator;
+
+service Calculator {
+	rpc Add(AddRequest) returns (ResultResponse) {}
+	rpc Subtract(SubtractRequest) returns (ResultResponse) {}
+	rpc Multiply(MultiplyRequest) returns (ResultResponse) {}
+	rpc Divide(DivideRequest) returns (ResultResponse) {}
+	rpc Pow(PowRequest) returns (ResultResponse) {}
+	rpc Sqrt(SqrtRequest) returns (ResultResponse) {}
+}
+
+message AddRequest {
+	double a = 1; 
+	double b = 2;
+}
+
+message SubtractRequest {
+	double a = 1;
+	double b = 2;
+}
+
+message MultiplyRequest {
+	double a = 1;
+	double b = 2;
+}
+
+message DivideRequest {
+	double a = 1;
+	double b = 2;
+}
+
+message PowRequest {
+	double x = 1;
+	double y = 2;
+}
+
+message SqrtRequest {
+	double d = 1;
+}
+
+message ResultResponse {
+	double result = 1;
+}

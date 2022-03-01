@@ -14,8 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazorise" Version="0.9.5.5" />
-    <PackageReference Include="Blazorise.Bootstrap5" Version="0.9.5.5" />
     <PackageReference Include="KubernetesClient" Version="7.0.13" />
   </ItemGroup>
 

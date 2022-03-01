@@ -5,6 +5,8 @@ networks:
     name: kafka_network
   rabbitmq_network:
     name: rabbitmq_network  
+  grpc_network:
+    name: grpc_network
 
 services:
   zookeeper:
@@ -124,7 +126,7 @@ services:
     build:
       dockerfile: Calculator.Microservices.Client.Web.Blazor.Health/Dockerfile
     ports:
-      - "4000:80"
+      - "3002:80"
     networks:
       - rabbitmq_network
       - kafka_network
@@ -246,3 +248,30 @@ services:
       RABBITMQ_HOSTNAME: rabbitmq
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EVENT_BUS_RETRY_COUNT: 5
+
+  server.grpc.api:
+    image: battlewarriorxxl/calculator:server_grpc_api
+    container_name: server.grpc.api
+    build:
+      dockerfile: Calculator.Microservices.Server.Grpc.Api/Dockerfile
+    ports:
+      - "5000:80"
+    networks:
+      - grpc_network
+    environment:
+      ALLOWED_CORS_ORIGIN: http://localhost:3003
+
+  client.web.angular.grpc:
+    image: battlewarriorxxl/calculator:client_web_angular_grpc
+    container_name: client.web.angular.grpc
+    build:
+      dockerfile: Calculator.Microservices.Client.Web.Angular/Dockerfile
+    ports:
+      - "3003:80"
+    networks:
+      - grpc_network
+    depends_on:
+      - server.grpc.api
+    environment:
+      GRPC_ENDPOINT: http://localhost:5000
+    
