@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Calculator.Microservices.Client.Web.Angular": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
+      },
+      "applicationUrl": "http://localhost:5001",
+      "GRPC_ENDPOINT": "http://localhost:5000"
+    }
+  }
+}
